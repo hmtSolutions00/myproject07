@@ -1,0 +1,179 @@
+:root{
+  --admin-bg:#0b1020;
+  --admin-card:#0f172a;
+  --admin-soft:#111b34;
+  --admin-line:rgba(255,255,255,.08);
+  --admin-text:#e5e7eb;
+  --admin-muted:#94a3b8;
+  --admin-primary:#00A3FF;
+  --admin-danger:#ff7b7b;
+  --admin-success:#5eead4;
+  --admin-warning:#fde68a;
+}
+
+.admin-body{
+  background:
+    radial-gradient(1200px 700px at 10% -10%, #182244, transparent),
+    radial-gradient(1200px 700px at 90% -10%, #0b3558, transparent),
+    var(--admin-bg);
+  min-height:100vh;
+  color:var(--admin-text);
+}
+
+/* ===== shell ===== */
+.admin-shell{
+  display:grid;
+  grid-template-columns: 240px 1fr;
+  gap:14px;
+  padding:14px;
+}
+@media (max-width: 992px){
+  .admin-shell{ grid-template-columns:1fr; }
+}
+
+/* ===== sidebar ===== */
+.sidebar{
+  background: rgba(15,23,42,.96);
+  border:1px solid var(--admin-line);
+  border-radius:16px;
+  padding:14px;
+  position:sticky; top:14px;
+  height:calc(100vh - 28px);
+}
+.sidebar .brand{
+  font-weight:900; letter-spacing:.3px;
+  font-size:1.05rem;
+  display:flex; align-items:center; gap:8px;
+  margin-bottom:12px;
+}
+.sidebar .nav-link{
+  color:var(--admin-text);
+  border-radius:12px;
+  padding:.6rem .8rem;
+  font-weight:800;
+  display:flex; align-items:center; gap:8px;
+}
+.sidebar .nav-link:hover{ background:var(--admin-soft); }
+.sidebar .nav-link.active{
+  background:var(--admin-primary);
+  color:white;
+  box-shadow:0 6px 16px rgba(0,163,255,.35);
+}
+
+/* ===== topbar ===== */
+.admin-topbar{
+  background: rgba(15,23,42,.96);
+  border:1px solid var(--admin-line);
+  border-radius:16px;
+  padding:12px 14px;
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:12px;
+}
+.admin-title{ font-weight:900; font-size:1.4rem; color:var(--admin-text); }
+.admin-sub{ color:var(--admin-muted); font-size:.9rem; }
+
+/* ===== card ===== */
+.admin-card{
+  background: rgba(15,23,42,.98);
+  border:1px solid var(--admin-line);
+  border-radius:16px;
+  padding:12px;
+  box-shadow:0 10px 30px rgba(0,0,0,.35);
+  color:var(--admin-text);
+}
+
+/* ===== table FIX: force dark background + readable text ===== */
+.table-admin{
+  width:100%;
+  background: transparent !important;
+  color: var(--admin-text) !important;
+  border-color: var(--admin-line) !important;
+}
+
+.table-admin thead th{
+  background:rgba(255,255,255,.05) !important;
+  color:var(--admin-text) !important;
+  font-weight:900;
+  border-bottom:1px solid var(--admin-line) !important;
+  white-space:nowrap;
+}
+
+.table-admin td{
+  color: var(--admin-text) !important;
+  border-top:1px solid var(--admin-line) !important;
+  vertical-align:middle;
+  background: transparent !important;
+}
+
+.table-admin tbody tr:hover{
+  background:rgba(255,255,255,.04) !important;
+}
+
+/* ===== tiny photo ===== */
+.photo-mini{
+  width:42px;height:42px;object-fit:cover;border-radius:10px;
+  background:#0b1226;border:1px solid var(--admin-line);
+}
+
+/* ===== badges ===== */
+.badge-soft{
+  background:rgba(255,255,255,.10);
+  border:1px solid var(--admin-line);
+  color:var(--admin-text);
+  font-weight:800;
+  padding:.3rem .6rem;
+  border-radius:999px;
+  font-size:.78rem;
+}
+
+.badge-success{ background:rgba(94,234,212,.15); color:var(--admin-success); border:1px solid rgba(94,234,212,.35); }
+.badge-warning{ background:rgba(253,230,138,.15); color:#facc15; border:1px solid rgba(253,230,138,.35); }
+.badge-danger{ background:rgba(255,123,123,.15); color:var(--admin-danger); border:1px solid rgba(255,123,123,.35); }
+
+/* ===== form FIX: control dark + option readable ===== */
+.form-admin .form-label{
+  font-weight:900;
+  color:var(--admin-text);
+}
+
+.form-admin .form-control,
+.form-admin .form-select{
+  background:#0b1226 !important;
+  border:1px solid var(--admin-line) !important;
+  color:var(--admin-text) !important;
+  border-radius:12px !important;
+}
+
+.form-admin .form-control::placeholder{
+  color: #6b7280;
+}
+
+.form-admin .form-control:focus,
+.form-admin .form-select:focus{
+  border-color:var(--admin-primary) !important;
+  box-shadow:0 0 0 .2rem rgba(0,163,255,.20) !important;
+}
+
+/* ✅ SUPER IMPORTANT:
+   dropdown list (option) biasanya putih default,
+   jadi teks harus gelap biar kebaca */
+.form-admin select option{
+  background: #ffffff !important;
+  color: #0f172a !important;
+}
+
+/* radio/checkbox */
+.form-admin input[type="radio"],
+.form-admin input[type="checkbox"]{
+  accent-color: var(--admin-primary);
+}
+
+/* sticky actions */
+.sticky-actions{
+  position:sticky; bottom:10px; z-index:3;
+  background:rgba(15,23,42,.98);
+  border:1px solid var(--admin-line);
+  padding:10px;
+  border-radius:14px;
+  box-shadow:0 10px 25px rgba(0,0,0,.35);
+}

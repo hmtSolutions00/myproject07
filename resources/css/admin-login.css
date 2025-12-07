@@ -1,0 +1,122 @@
+:root{
+  --bg1:#050b1f;
+  --bg2:#0b1226;
+  --card:#0f172a;
+  --stroke:rgba(255,255,255,.08);
+  --text:#e2e8f0;
+  --muted:#94a3b8;
+  --primary:#00A3FF;
+}
+
+*{box-sizing:border-box}
+body.login-body{
+  margin:0;
+  min-height:100vh;
+  display:grid;
+  place-items:center;
+  background:
+    radial-gradient(900px 500px at 10% 0%, #0a1a3a, transparent),
+    radial-gradient(800px 600px at 90% 10%, #002c6b, transparent),
+    linear-gradient(180deg, var(--bg1), var(--bg2));
+  font-family: system-ui, -apple-system, "Inter", Segoe UI, Roboto, sans-serif;
+  color:var(--text);
+}
+
+.login-card{
+  width:min(420px, 92vw);
+  background:rgba(15,23,42,.9);
+  border:1px solid var(--stroke);
+  border-radius:18px;
+  padding:20px;
+  box-shadow:0 18px 50px rgba(0,0,0,.5);
+  backdrop-filter: blur(6px);
+}
+
+.login-header{
+  display:flex;
+  gap:12px;
+  align-items:center;
+  margin-bottom:14px;
+}
+.login-logo{
+  width:46px;height:46px;border-radius:12px;
+  display:grid;place-items:center;
+  font-weight:900;font-size:1.4rem;
+  background:var(--primary);
+  color:#001018;
+  box-shadow:0 10px 20px rgba(0,163,255,.35);
+}
+.login-title{
+  font-weight:900;
+  font-size:1.25rem;
+}
+.login-sub{
+  font-size:.9rem;
+  color:var(--muted);
+}
+
+.login-alert{
+  background:#ffb4b4;
+  color:#320000;
+  padding:8px 10px;
+  border-radius:10px;
+  font-weight:800;
+  margin-bottom:10px;
+}
+
+.login-label{
+  display:block;
+  font-weight:800;
+  margin:10px 0 6px;
+  font-size:.92rem;
+}
+
+.login-input{
+  width:100%;
+  border-radius:12px;
+  border:1px solid var(--stroke);
+  padding:11px 12px;
+  background:#0b1226;
+  color:var(--text);
+  outline:none;
+  font-size:1rem;
+}
+.login-input:focus{
+  border-color:rgba(0,163,255,.9);
+  box-shadow:0 0 0 3px rgba(0,163,255,.18);
+}
+
+.login-remember{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  font-size:.9rem;
+  color:var(--muted);
+  margin-top:10px;
+}
+
+.login-btn{
+  width:100%;
+  margin-top:14px;
+  border:0;
+  padding:12px;
+  border-radius:999px;
+  font-weight:900;
+  font-size:1rem;
+  cursor:pointer;
+  background:var(--primary);
+  color:#fff;
+  box-shadow:0 10px 22px rgba(0,163,255,.35);
+  transition:.18s ease;
+}
+.login-btn:hover{
+  transform:translateY(-1px);
+  filter:brightness(1.06);
+}
+
+.login-foot{
+  text-align:center;
+  margin-top:12px;
+  font-size:.8rem;
+  color:var(--muted);
+}

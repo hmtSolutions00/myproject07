@@ -1,0 +1,487 @@
+/* =========================================================
+   RESET + ROOT
+========================================================= */
+:root{
+  --primary: #00A3FF;
+  --text: #0f172a;
+  --muted: #6b7280;
+  --bg: #f7f9fc;
+  --card: #ffffff;
+  --grid: #F5F5F5;
+  --stroke: #e9ecf4;
+
+  /* default accent (akan dioverride JS via style attr / css var) */
+  --dock-accent: #00A3FF;
+}
+
+*{ box-sizing:border-box; }
+html, body{
+  width:100%;
+  height:100%;
+  overflow-x:hidden; /* ✅ cegah scroll horizontal global */
+}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family: system-ui, -apple-system, "Inter", Segoe UI, Roboto, sans-serif;
+}
+
+/* =========================================================
+   HOMEPAGE LAYOUT (ONE PAGE)
+========================================================= */
+.page-home{
+  width:100%;
+  height:100vh;       /* ✅ 1 layar */
+  min-height:100vh;
+  padding:14px;
+  overflow:hidden;     /* ✅ body gak scroll kebawah */
+  display:flex;
+  flex-direction:column;
+}
+
+/* header bar */
+.home-header{
+  position:sticky;
+  top:0;
+  z-index:7;
+  background:transparent;
+  margin-bottom:12px;
+  flex:0 0 auto;
+}
+.home-header__inner{
+  background:var(--card);
+  border:1px solid var(--stroke);
+  border-radius:18px;
+  padding:14px 16px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  box-shadow:0 8px 22px rgba(15,23,42,.06);
+}
+.home-title{
+  margin:0;
+  font-weight:900;
+  font-size:clamp(1.4rem, 2.2vw, 2.1rem);
+  letter-spacing:.2px;
+  text-align:center;
+  flex:1;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+/* pill buttons */
+.btn-pill{
+  border-radius:999px;
+  padding:.7rem 1.3rem;
+  font-weight:800;
+  font-size:.95rem;
+  border:0;
+  text-decoration:none;
+  white-space:nowrap;
+  transition:.18s ease;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  gap:.4rem;
+}
+.btn-primary{
+  background:var(--primary);
+  color:#fff;
+  box-shadow:0 8px 18px rgba(0,163,255,.28);
+}
+.btn-primary:hover{
+  transform:translateY(-2px);
+  filter:brightness(1.05);
+  color:#fff;
+}
+.btn-outline{
+  background:#fff;
+  color:var(--text);
+  border:1px solid var(--stroke);
+}
+.btn-outline:hover{
+  transform:translateY(-1px);
+}
+
+/* main area fill remaining height */
+.home-main{
+  width:100%;
+  flex:1 1 auto;
+  min-height:0;       /* ✅ penting supaya child bisa shrink */
+  overflow:hidden;    /* ✅ anti scroll bawah */
+}
+
+/* main layout */
+.umap-layout{
+  height:100%;
+  min-height:0;
+  display:grid;
+  grid-template-columns:360px 1fr;
+  gap:12px;
+  align-items:start;
+  position:relative;
+  overflow:hidden;   /* ✅ anti horizontal */
+}
+.umap-layout--onecol{
+  grid-template-columns:1fr;
+}
+@media(max-width:992px){
+  .umap-layout{ grid-template-columns:1fr; }
+}
+
+/* =========================================================
+   LEFT DOCK (DETAIL FULL) - CLEAN WHITE + COLOR BORDER
+========================================================= */
+.dock-left{
+  background: var(--card);
+  border: 2px solid var(--dock-accent, #e9ecf4);
+  border-radius: 18px;
+  padding: 14px;
+  box-shadow: 0 10px 26px rgba(15,23,42,.08);
+
+  position: sticky;
+  top: 92px;
+
+  height: calc(100vh - 190px);
+  overflow: hidden;
+
+  transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+}
+.dock-left--hidden{ display:none; }
+
+/* accent bar */
+.dock-left::before{
+  content:"";
+  display:block;
+  height:6px;
+  border-radius:999px;
+  background: var(--dock-accent, #00A3FF);
+  margin-bottom:10px;
+  opacity:.9;
+}
+
+/* photo & header */
+.detail-photo{
+  width:100%;
+  height:180px;
+  object-fit:cover;
+  border-radius:14px;
+  background:#fff;
+  border:1px solid rgba(15,23,42,.08);
+  box-shadow: 0 8px 18px rgba(15,23,42,.06);
+}
+.detail-title{
+  font-weight:900;
+  font-size:1.15rem;
+  margin-top:10px;
+  letter-spacing:.2px;
+}
+.detail-sub{
+  font-size:.92rem;
+  color:#475569;
+  margin-bottom:10px;
+  font-weight:700;
+}
+
+/* scroll only inside card */
+.detail-scroll{
+  height:calc(100% - 280px);
+  overflow:auto;
+  padding-right:6px;
+
+  background:#f8fafc;
+  border:1px solid var(--stroke);
+  border-radius:12px;
+  padding:10px 12px;
+}
+.detail-scroll::-webkit-scrollbar{ width:6px; }
+.detail-scroll::-webkit-scrollbar-thumb{
+  background: color-mix(in srgb, var(--dock-accent, #00A3FF) 40%, #cbd5e1);
+  border-radius:10px;
+}
+
+/* kv list */
+.kv{
+  display:grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap:8px 10px;
+  font-size:.93rem;
+}
+.kv .k{
+  font-weight:900;
+  color:#0f172a;
+}
+.kv .v{
+  font-weight:600;
+  color:#111827;
+  background:#ffffff;
+  border:1px solid #eef2f7;
+  padding:4px 6px;
+  border-radius:8px;
+  word-break:break-word;
+}
+
+/* CTA -> close */
+.btn-cta{
+  width:100%;
+  border-radius:999px;
+  background:#0f172a;
+  color:#fff;
+  font-weight:900;
+  padding:.85rem 1rem;
+  border:0;
+  margin-top:10px;
+  box-shadow:0 8px 18px rgba(15,23,42,.18);
+  transition:.18s ease;
+}
+.btn-cta:hover{
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+}
+
+/* =========================================================
+   COMPARE DOCK FINAL (3-COLUMN TABLE PER-ROW)
+========================================================= */
+.dock-compare{
+  position:fixed;
+  right:14px;
+  top:92px;
+  width:min(720px, 96vw);
+  max-width: calc(100vw - 28px); /* ✅ anti horizontal scroll */
+  background:var(--card);
+  border:1px solid var(--stroke);
+  border-radius:18px;
+  padding:12px;
+  box-shadow:0 14px 36px rgba(15,23,42,.14);
+  z-index:8;
+
+  max-height:calc(100vh - 150px);
+  overflow:auto;
+}
+.dock-compare--hidden{ display:none; }
+
+.dock-compare__title{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:6px 4px 10px;
+  border-bottom:1px dashed var(--stroke);
+}
+.dock-compare__sub{
+  font-size:.82rem;
+  color:var(--muted);
+  font-weight:700;
+}
+
+/* container whole compare */
+.compare-wrap{
+  margin-top:10px;
+  display:grid;
+  grid-template-columns:1fr;
+  gap:10px;
+}
+
+/* top header row */
+.compare-head{
+  display:grid;
+  grid-template-columns:1fr 140px 1fr;
+  gap:10px;
+  align-items:stretch;
+}
+.compare-head .compare-side{
+  border-radius:14px;
+  padding:10px;
+  border:2px solid rgba(0,0,0,.06);
+  box-shadow:0 10px 24px rgba(0,0,0,.10);
+}
+.compare-head .compare-side-inner{
+  background:rgba(255,255,255,.86);
+  border-radius:12px;
+  padding:10px 12px;
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+.compare-head .compare-photo{
+  width:52px;height:52px;border-radius:10px;object-fit:cover;background:#fff;
+  flex:0 0 auto;
+}
+.compare-head .compare-name{
+  font-weight:900;font-size:1.05rem;line-height:1.2;
+}
+.compare-head .compare-sub{
+  font-size:.86rem;color:#475569;font-weight:700;
+}
+
+/* spacer middle */
+.compare-head .compare-mid{
+  border-radius:12px;
+  background:#0f172a;
+  opacity:.9;
+}
+
+/* rows */
+.compare-table{
+  display:grid;
+  grid-template-columns:1fr 140px 1fr;
+  gap:6px 10px;
+  align-items:stretch;
+}
+
+.compare-cell{
+  border-radius:10px;
+  padding:6px 8px;
+  font-size:.92rem;
+  font-weight:700;
+  background:rgba(255,255,255,.75);
+  color:var(--text);
+  min-height:32px;
+  display:flex;
+  align-items:center;
+  word-break:break-word;
+}
+
+.compare-label{
+  border-radius:10px;
+  padding:6px 8px;
+  font-size:.9rem;
+  font-weight:900;
+  background:#0f172a;
+  color:#fff;
+  text-align:center;
+  letter-spacing:.2px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:32px;
+}
+
+.dock-compare__actions{
+  display:flex;
+  gap:8px;
+  justify-content:flex-end;
+  margin-top:10px;
+  padding-top:10px;
+  border-top:1px dashed var(--stroke);
+}
+
+/* mobile */
+@media(max-width: 900px){
+  .compare-head,
+  .compare-table{
+    grid-template-columns:1fr;
+  }
+  .compare-head .compare-mid{ display:none; }
+  .compare-label{ display:none; }
+}
+
+/* =========================================================
+   MAP CARD + GRID (FILL REMAINING HEIGHT)
+========================================================= */
+.map-card{
+  background:var(--card);
+  border:1px solid var(--stroke);
+  border-radius:18px;
+  padding:10px;
+  position:relative;
+
+  height:100%;     /* ✅ full sisa main */
+  min-height:0;    /* ✅ jangan paksa 540px */
+  box-shadow:0 8px 22px rgba(15,23,42,.06);
+  overflow:hidden; /* ✅ anti horizontal karena svg zoom */
+}
+.umap-canvas{
+  width:100%;
+  height:100%;
+  border-radius:14px;
+  background:
+    linear-gradient(0deg, var(--grid) 1px, transparent 1px) 0 0/36px 36px,
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px) 0 0/36px 36px,
+    #fff;
+  overflow:hidden;
+}
+
+/* hint overlay */
+.map-hints{
+  position:absolute;
+  top:10px; left:12px;
+  z-index:3;
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  font-size:.78rem;
+  color:var(--muted);
+  background:rgba(255,255,255,.85);
+  padding:6px 8px;
+  border-radius:10px;
+  backdrop-filter: blur(4px);
+}
+.hint-locked{
+  background:#111827;
+  color:#fff;
+  padding:2px 6px;
+  border-radius:999px;
+  font-weight:900;
+}
+.hint-compare{
+  background:#0ea5e9;
+  color:#fff;
+  padding:2px 6px;
+  border-radius:999px;
+  font-weight:900;
+}
+
+/* =========================================================
+   TOOLTIP HOVER (tippy)
+========================================================= */
+.tippy-box[data-theme~='umap-hover']{
+  border-radius:12px;
+  box-shadow:0 14px 34px rgba(0,0,0,.16);
+  color:var(--text);
+}
+.hover-glass{
+  background:rgba(255,255,255,.78);
+  border:1px solid rgba(255,255,255,.9);
+  border-radius:10px;
+  padding:8px;
+  backdrop-filter: blur(4px);
+}
+.tooltip-kv{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:4px 8px;
+  font-size:.84rem;
+}
+.tooltip-kv .k{ font-weight:900; }
+
+/* =========================================================
+   MODAL ADD DATA
+========================================================= */
+.modal-adddata{
+  border-radius:18px;
+  border:1px solid var(--stroke);
+  overflow:hidden;
+}
+.addform-mount{ min-height:240px; }
+
+/* scroll di body modal */
+.modal-dialog-scrollable .modal-body{
+  max-height: calc(100vh - 210px);
+  overflow-y: auto;
+}
+
+/* header modal */
+.modal-header{
+  background:#fff;
+  border-bottom:1px solid var(--stroke);
+}
+
+/* footer modal */
+.modal-footer{
+  background:#fff;
+  border-top:1px solid var(--stroke);
+}
