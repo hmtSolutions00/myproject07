@@ -9,11 +9,6 @@ use Illuminate\Support\Facades\Storage;
 
 class UmapService
 {
-    /**
-     * Palette warna aman (tanpa hitam).
-     * Silakan tambah / ganti kapanpun, tapi jangan ubah urutan
-     * kalau mau warna lama tetap konsisten.
-     */
     protected array $palette = [
         "#FF6384","#36A2EB","#FFCE56","#4BC0C0","#9966FF",
         "#FF9F40","#00C49A","#F15BB5","#00BBF9","#9BDEAC",
@@ -22,18 +17,38 @@ class UmapService
     ];
 
     /**
-     * Tentukan warna stabil PER ORANG (unik per menteri).
-     * Basis: hash(id) -> index palette.
+     * Get Node.js binary path (hardcoded karena shell_exec disabled)
      */
+    protected function getNodePath(): string
+    {
+        // Langsung return path yang sudah pasti
+        $nodePath = '/home/u941929935/.nvm/versions/node/v18.20.4/bin/node';
+        
+        if (file_exists($nodePath) && is_executable($nodePath)) {
+            return $nodePath;
+        }
+        
+        // Jika path di atas tidak ada, coba fallback
+        $fallbacks = [
+            '/usr/bin/node',
+            '/usr/local/bin/node',
+        ];
+        
+        foreach ($fallbacks as $path) {
+            if (file_exists($path) && is_executable($path)) {
+                return $path;
+            }
+        }
+        
+        throw new \Exception("Node.js binary tidak ditemukan. Expected path: {$nodePath}");
+    }
+
     protected function pickColorForMenteri(Menteri $m): string
     {
-        // hash stabil dari id (lebih nyebar daripada modulo biasa)
         $hash = abs(crc32((string) $m->id));
         $idx  = $hash % count($this->palette);
-
         $color = $this->palette[$idx];
 
-        // safeguard kalau palette suatu saat mengandung hitam
         if (in_array(strtolower($color), ['#000', '#000000', 'black'], true)) {
             $color = "#36A2EB";
         }
@@ -42,13 +57,26 @@ class UmapService
     }
 
     /**
-     * Generate ulang embedding untuk semua menteri approved.
+     * Cek apakah menteri pernah sekolah ke luar negeri
+     * Asumsi: kode_umap >= 39 adalah luar negeri (sesuaikan dengan data master)
      */
+    protected function cekKeLuarNegeri(Menteri $m): int
+    {
+        $lokasiS1 = optional($m->lokasiS1)->kode_umap ?? 0;
+        $lokasiS2 = optional($m->lokasiS2)->kode_umap ?? 0;
+        $lokasiS3 = optional($m->lokasiS3)->kode_umap ?? 0;
+
+        if ($lokasiS1 >= 39 || $lokasiS2 >= 39 || $lokasiS3 >= 39) {
+            return 1;
+        }
+
+        return 0;
+    }
+
     public function recomputeAll(string $batchTag = null): void
     {
         $batchTag = $batchTag ?? ('v' . now()->format('Ymd_His'));
 
-        // 1) Ambil semua menteri approved + eager load relasi yg dipakai fitur
         $menteris = Menteri::with([
             'jenisKelamin','provinsiLahir','umurKategori',
             'partai','jabatanRangkap','dprMpr','militerPolisi',
@@ -56,37 +84,35 @@ class UmapService
             'pendidikanS1','pendidikanS2S3','korupsiLevel','hartaLevel',
         ])->where('status', 'approved')->get();
 
-        // kalau kosong, stop aman
         if ($menteris->isEmpty()) {
             return;
         }
 
-        // 2) Bentuk fitur numerik sesuai encoding excel kamu
+        // Bentuk fitur sesuai URUTAN cobaUmap.js (TANPA provinsiLahir)
         $payload = $menteris->map(function ($m) {
             return [
                 'id' => $m->id,
                 'features' => [
-                    (int) $m->jenisKelamin->kode_umap,
-                    (int) $m->provinsiLahir->kode_umap,
-                    (int) $m->umurKategori->kode_umap,
-                    (int) $m->partai->kode_umap,
-                    (int) $m->jabatanRangkap->kode_umap,
-                    (int) $m->pernah_menteri,
-                    (int) $m->dprMpr->kode_umap,
-                    (int) $m->militerPolisi->kode_umap,
-                    (int) $m->lokasiSma->kode_umap,
-                    (int) $m->lokasiS1->kode_umap,
-                    (int) optional($m->lokasiS2)->kode_umap ?? 0,
-                    (int) optional($m->lokasiS3)->kode_umap ?? 0,
-                    (int) $m->pendidikanS1->kode_umap,
-                    (int) optional($m->pendidikanS2S3)->kode_umap ?? 0,
-                    (int) $m->korupsiLevel->kode_umap,
-                    (int) $m->hartaLevel->kode_umap,
+                    (int) $m->jenisKelamin->kode_umap,        // 0: JenisKelamin
+                    (int) $m->partai->kode_umap,              // 1: Partai
+                    (int) $m->jabatanRangkap->kode_umap,      // 2: JabatanRangkap
+                    (int) $m->pernah_menteri,                 // 3: Militer (pernah_menteri)
+                    (int) $m->dprMpr->kode_umap,              // 4: DPRAtauMPR
+                    (int) $m->militerPolisi->kode_umap,       // 5: MiliterAtauPolisi
+                    (int) $m->umurKategori->kode_umap,        // 6: Umur
+                    (int) $m->lokasiSma->kode_umap,           // 7: SMA
+                    (int) $m->lokasiS1->kode_umap,            // 8: LokasiS1
+                    (int) optional($m->lokasiS2)->kode_umap ?? 0, // 9: LokasiS2
+                    (int) optional($m->lokasiS3)->kode_umap ?? 0, // 10: LokasiS3
+                    (int) $this->cekKeLuarNegeri($m),         // 11: KeLuarNegeri
+                    (int) $m->pendidikanS1->kode_umap,        // 12: Pendidikan1
+                    (int) optional($m->pendidikanS2S3)->kode_umap ?? 0, // 13: Pendidikan2
+                    (int) $m->korupsiLevel->kode_umap,        // 14: Korupsi
+                    (int) $m->hartaLevel->kode_umap,          // 15: Harta
                 ],
             ];
         })->values()->all();
 
-        // simpan payload json sementara
         $inputFile  = "umap/input_{$batchTag}.json";
         $outputFile = "umap/output_{$batchTag}.json";
 
@@ -95,43 +121,64 @@ class UmapService
         $inputPath  = storage_path("app/{$inputFile}");
         $outputPath = storage_path("app/{$outputFile}");
 
-        // 3) Panggil Node UMAP
-        $nodeBin    = 'node';
+        // Gunakan getNodePath() untuk mendapatkan path Node.js
+        $nodeBin = $this->getNodePath();
         $scriptPath = base_path('storage/umap/run-umap.js');
 
-        $cmd = escapeshellcmd($nodeBin)
+        $cmd = escapeshellarg($nodeBin)
             . ' ' . escapeshellarg($scriptPath)
             . ' ' . escapeshellarg($inputPath)
             . ' ' . escapeshellarg($outputPath);
 
-        exec($cmd, $out, $code);
+        $descriptorspec = [
+            0 => ["pipe", "r"],
+            1 => ["pipe", "w"],
+            2 => ["pipe", "w"]
+        ];
+
+        // Set environment variables
+        $env = [
+            'PATH' => '/usr/local/bin:/usr/bin:/bin:/home/u941929935/.nvm/versions/node/v18.20.4/bin',
+            'HOME' => '/home/u941929935',
+        ];
+
+        $process = proc_open($cmd, $descriptorspec, $pipes, null, $env);
+
+        if (!is_resource($process)) {
+            throw new \Exception("Tidak bisa menjalankan Node.js process.");
+        }
+
+        fclose($pipes[0]);
+        $stdout = stream_get_contents($pipes[1]);
+        $stderr = stream_get_contents($pipes[2]);
+        fclose($pipes[1]);
+        fclose($pipes[2]);
+
+        $code = proc_close($process);
 
         if ($code !== 0) {
-            throw new \Exception("UMAP Node process gagal:\n" . implode("\n", $out));
+            $out = array_filter(explode("\n", trim($stdout . "\n" . $stderr)));
+            throw new \Exception("UMAP Node process gagal (exit code: {$code}):\n" . implode("\n", $out));
         }
 
         if (!file_exists($outputPath)) {
-            throw new \Exception("UMAP output file tidak ditemukan: {$outputPath}\nOutput Node:\n" . implode("\n", $out));
+            throw new \Exception("UMAP output file tidak ditemukan: {$outputPath}");
         }
 
         $json   = file_get_contents($outputPath);
         $result = json_decode($json, true);
 
         if (!is_array($result) || count($result) === 0) {
-            throw new \Exception("UMAP output kosong / tidak valid.\nIsi file:\n{$json}");
+            throw new \Exception("UMAP output kosong / tidak valid.");
         }
 
-        // lookup menteri by id
         $menteriById = $menteris->keyBy('id');
 
-        // 4) Matikan embedding lama
         UmapEmbedding::where('is_active', true)->update(['is_active' => false]);
 
-        // 5) Insert embedding baru + color_code per-orang
         DB::transaction(function () use ($result, $batchTag, $menteriById) {
             foreach ($result as $r) {
                 $m = $menteriById->get($r['id']);
-
                 $color = $m ? $this->pickColorForMenteri($m) : "#36A2EB";
 
                 UmapEmbedding::create([

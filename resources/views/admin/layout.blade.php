@@ -6,7 +6,6 @@
   <title>Admin UMAP Menteri</title>
 
   @vite([
-    'resources/css/app.css',
     'resources/css/admin.css',
     'resources/js/app.js'
   ])
@@ -35,6 +34,12 @@
         <a class="nav-link {{ request()->routeIs('admin.umap_integer.*')?'active':'' }}"
            href="{{ route('admin.umap_integer.index') }}">Untuk UMAP Integer</a>
       </nav>
+      <br>
+       <div class="d-flex gap-2">
+          <a href="{{ route('home') }}" class="btn btn-outline-light btn-sm rounded-pill px-3 fw-bold">
+            Lihat Homepage
+          </a>
+        </div>
     </aside>
 
     {{-- CONTENT --}}
@@ -48,9 +53,6 @@
         <div class="d-flex gap-2">
           <a href="{{ route('home') }}" class="btn btn-outline-light btn-sm rounded-pill px-3 fw-bold">
             Lihat Homepage
-          </a>
-          <a href="{{ route('menteri.create') }}" class="btn btn-info btn-sm rounded-pill px-3 fw-bold text-dark">
-            Tambah Menteri
           </a>
         </div>
       </div>

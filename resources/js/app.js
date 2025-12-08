@@ -166,6 +166,18 @@ document.addEventListener("change", (e) => {
   // helper display aman
   const disp = (v) => (v === null || v === undefined || v === "") ? "-" : v;
 
+  // ✅ format angka rupiah dengan titik pemisah ribuan
+  const formatRupiah = (value) => {
+    if (value === null || value === undefined || value === "") return "-";
+    
+    // Jika value sudah berupa string angka atau number
+    const numStr = String(value).replace(/\D/g, ''); // hapus semua non-digit
+    if (!numStr || numStr === "0") return "-";
+    
+    // Tambahkan titik pemisah ribuan
+    return numStr.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  };
+
   // helper precedence: detail menang, fallback ke base
   const pick = (detailVal, baseVal, fallback = "-") => {
     if (detailVal !== null && detailVal !== undefined && detailVal !== "")
@@ -252,7 +264,7 @@ document.addEventListener("change", (e) => {
         <div style="display:flex; gap:8px; align-items:center; margin-bottom:6px;">
           <div style="flex:1;">
             <div style="font-weight:900; font-size:1rem;">${disp(d.nama)}</div>
-            <div style="font-size:.84rem; color:#475569;">${disp(d.kementerian)}</div>
+            <div style="font-size:.84rem; color:#475569;">${disp(d.catatan)}</div>
           </div>
           <img src="${d.foto_url || ""}"
                onerror="this.style.display='none'"
@@ -314,7 +326,7 @@ document.addEventListener("change", (e) => {
       </div>
 
       <div class="detail-title">${disp(d.nama)}</div>
-      <div class="detail-sub">${disp(d.kementerian)}</div>
+      <div class="detail-sub">${disp(d.catatan)}</div>
 
       <div class="detail-scroll">
         <div class="kv">
@@ -332,12 +344,6 @@ document.addEventListener("change", (e) => {
 
           <div class="k">Karir DPR/MPR</div><div class="v">${disp(d.dpr_mpr)}</div>
           <div class="k">Karir Mil/Pol</div><div class="v">${disp(d.militer_polisi)}</div>
-
-          <div class="k">Lokasi SMA</div><div class="v">${disp(d.lokasi_sma)}</div>
-          <div class="k">Lokasi S1</div><div class="v">${disp(d.lokasi_s1)}</div>
-          <div class="k">Lokasi S2</div><div class="v">${disp(d.lokasi_s2)}</div>
-          <div class="k">Lokasi S3</div><div class="v">${disp(d.lokasi_s3)}</div>
-
           <div class="k">Almamater SMA</div><div class="v">${disp(d.display_almamater_sma)}</div>
           <div class="k">Almamater S1</div><div class="v">${disp(d.display_almamater_s1)}</div>
           <div class="k">Almamater S2</div><div class="v">${disp(d.display_almamater_s2)}</div>
@@ -346,11 +352,9 @@ document.addEventListener("change", (e) => {
           <div class="k">Bidang S1</div><div class="v">${disp(d.pendidikan_s1)}</div>
           <div class="k">Bidang S2/S3</div><div class="v">${disp(d.pendidikan_s2s3)}</div>
 
-          <div class="k">Korupsi</div><div class="v">${disp(d.korupsi_level)}</div>
-          <div class="k">Harta Level</div><div class="v">${disp(d.harta_level)}</div>
 
           <div class="k">Status Hukum</div><div class="v">${disp(d.display_status_hukum)}</div>
-          <div class="k">Kekayaan (Rp)</div><div class="v">${disp(d.display_kekayaan_rp)}</div>
+          <div class="k">Kekayaan (Rp)</div><div class="v">${formatRupiah(d.display_kekayaan_rp)}</div>
         </div>
       </div>
     `;
@@ -399,34 +403,20 @@ document.addEventListener("change", (e) => {
       { label:"Tempat Lahir",    a:leftD.display_tempat_lahir, b:rightD.display_tempat_lahir },
       { label:"Tanggal Lahir",   a:leftD.display_tanggal_lahir,b:rightD.display_tanggal_lahir },
       { label:"Umur (Tahun)",    a:dispUmur(leftD),            b:dispUmur(rightD) },
-
       { label:"Provinsi Lahir",  a:leftD.provinsi_lahir,       b:rightD.provinsi_lahir },
       { label:"Umur Kategori",   a:leftD.umur,                 b:rightD.umur },
-
       { label:"Partai",          a:leftD.partai,               b:rightD.partai },
       { label:"Jabatan Rangkap", a:leftD.jabatan_rangkap,      b:rightD.jabatan_rangkap },
-
       { label:"Karir DPR/MPR",   a:leftD.dpr_mpr,              b:rightD.dpr_mpr },
       { label:"Karir Mil/Pol",   a:leftD.militer_polisi,       b:rightD.militer_polisi },
-
-      { label:"Lokasi SMA",      a:leftD.lokasi_sma,           b:rightD.lokasi_sma },
-      { label:"Lokasi S1",       a:leftD.lokasi_s1,            b:rightD.lokasi_s1 },
-      { label:"Lokasi S2",       a:leftD.lokasi_s2,            b:rightD.lokasi_s2 },
-      { label:"Lokasi S3",       a:leftD.lokasi_s3,            b:rightD.lokasi_s3 },
-
       { label:"Almamater SMA",   a:leftD.display_almamater_sma,b:rightD.display_almamater_sma },
       { label:"Almamater S1",    a:leftD.display_almamater_s1, b:rightD.display_almamater_s1 },
       { label:"Almamater S2",    a:leftD.display_almamater_s2, b:rightD.display_almamater_s2 },
       { label:"Almamater S3",    a:leftD.display_almamater_s3, b:rightD.display_almamater_s3 },
-
       { label:"Bidang S1",       a:leftD.pendidikan_s1,        b:rightD.pendidikan_s1 },
       { label:"Bidang S2/S3",    a:leftD.pendidikan_s2s3,      b:rightD.pendidikan_s2s3 },
-
-      { label:"Korupsi",         a:leftD.korupsi_level,        b:rightD.korupsi_level },
-      { label:"Harta Level",     a:leftD.harta_level,          b:rightD.harta_level },
-
       { label:"Status Hukum",    a:leftD.display_status_hukum, b:rightD.display_status_hukum },
-      { label:"Kekayaan (Rp)",   a:leftD.display_kekayaan_rp,   b:rightD.display_kekayaan_rp },
+      { label:"Kekayaan (Rp)",   a:formatRupiah(leftD.display_kekayaan_rp), b:formatRupiah(rightD.display_kekayaan_rp) },
     ];
 
     const rows = fields.map(f => `
@@ -443,7 +433,7 @@ document.addEventListener("change", (e) => {
               <img class="compare-photo" src="${leftD.foto_url || ""}" onerror="this.style.display='none'">
               <div>
                 <div class="compare-name">${disp(leftD.nama)}</div>
-                <div class="compare-sub">${disp(leftD.kementerian)}</div>
+                <div class="compare-sub">${disp(leftD.catatan)}</div>
               </div>
             </div>
           </div>
@@ -455,7 +445,7 @@ document.addEventListener("change", (e) => {
               <img class="compare-photo" src="${rightD.foto_url || ""}" onerror="this.style.display='none'">
               <div>
                 <div class="compare-name">${disp(rightD.nama)}</div>
-                <div class="compare-sub">${disp(rightD.kementerian)}</div>
+                <div class="compare-sub">${disp(rightD.catatan)}</div>
               </div>
             </div>
           </div>
@@ -480,37 +470,41 @@ document.addEventListener("change", (e) => {
   }
 
   function enterCompareMode() {
-    compareMode = true;
-    lockedId = null;
+  compareMode = true;
+  lockedId = null;
 
-    dockLeft?.classList.add("dock-left--hidden");
-    layout?.classList.add("umap-layout--onecol");
-    hintLocked && (hintLocked.style.display = "none");
-    hintCompare && (hintCompare.style.display = "inline-flex");
+  dockLeft?.classList.add("dock-left--hidden");
+  layout?.classList.add("umap-layout--onecol");
+  hintLocked && (hintLocked.style.display = "none");
+  hintCompare && (hintCompare.style.display = "inline-flex");
 
-    resetCompare();
+  resetCompare();
 
-    if (btnCompare) {
-      btnCompare.textContent = "Mode Compare Aktif";
-      btnCompare.classList.add("btn-outline");
-    }
+  if (btnCompare) {
+    btnCompare.textContent = "Mode Compare Aktif";
+    btnCompare.classList.remove("btn-primary");       // biru default
+    btnCompare.classList.add("btn-compare-active");   // hijau aktif
+  }
+}
+
+
+function exitCompareMode() {
+  compareMode = false;
+  hintCompare && (hintCompare.style.display = "none");
+  dockCompare?.classList.add("dock-compare--hidden");
+
+  if (btnCompare) {
+    btnCompare.textContent = "Bandingkan Menteri";
+    btnCompare.classList.remove("btn-compare-active");
+    btnCompare.classList.add("btn-primary");
   }
 
-  function exitCompareMode() {
-    compareMode = false;
-    hintCompare && (hintCompare.style.display = "none");
-    dockCompare?.classList.add("dock-compare--hidden");
+  nodes
+    .attr("fill", (n, i) => getColor(n, i))
+    .attr("opacity", 0.9)
+    .attr("r", 5);
+}
 
-    if (btnCompare) {
-      btnCompare.textContent = "Bandingkan Menteri";
-      btnCompare.classList.remove("btn-outline");
-    }
-
-    nodes
-      .attr("fill", (n, i) => getColor(n, i))
-      .attr("opacity", 0.9)
-      .attr("r", 5);
-  }
 
   // ===== dots =====
   const nodes = g.selectAll("circle")

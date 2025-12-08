@@ -134,18 +134,20 @@ body{
 }
 
 /* =========================================================
-   LEFT DOCK (DETAIL FULL) - CLEAN WHITE + COLOR BORDER
+   LEFT DOCK (DETAIL FULL) - BG WARNA MAP + GLASS CONTENT
 ========================================================= */
 .dock-left{
-  background: var(--card);
-  border: 2px solid var(--dock-accent, #e9ecf4);
+  /* ✅ background ikut warna titik */
+  background: var(--dock-accent, #00A3FF);
+
+  /* border masih ada tapi lebih soft */
+  border: 2px solid color-mix(in srgb, var(--dock-accent, #00A3FF) 70%, #000 10%);
   border-radius: 18px;
   padding: 14px;
-  box-shadow: 0 10px 26px rgba(15,23,42,.08);
 
+  box-shadow: 0 12px 28px rgba(15,23,42,.12);
   position: sticky;
   top: 92px;
-
   height: calc(100vh - 190px);
   overflow: hidden;
 
@@ -153,26 +155,38 @@ body{
 }
 .dock-left--hidden{ display:none; }
 
-/* accent bar */
+/* accent bar tetap tapi lebih subtle */
 .dock-left::before{
   content:"";
   display:block;
   height:6px;
   border-radius:999px;
-  background: var(--dock-accent, #00A3FF);
+  background: rgba(255,255,255,.85);
   margin-bottom:10px;
   opacity:.9;
 }
 
-/* photo & header */
+/* photo frame biar kontras di atas bg warna */
 .detail-photo{
   width:100%;
   height:180px;
   object-fit:cover;
   border-radius:14px;
   background:#fff;
-  border:1px solid rgba(15,23,42,.08);
-  box-shadow: 0 8px 18px rgba(15,23,42,.06);
+  border:2px solid rgba(255,255,255,.9);
+  box-shadow:0 8px 18px rgba(15,23,42,.12);
+}
+
+/* title/sub kasih "glass chip" biar kebaca di bg warna */
+.detail-title,
+.detail-sub{
+  display:inline-block;
+  background: rgba(255,255,255,.88);
+  padding:4px 8px;
+  border-radius:10px;
+  backdrop-filter: blur(4px);
+  width:fit-content;
+  max-width:100%;
 }
 .detail-title{
   font-weight:900;
@@ -182,21 +196,22 @@ body{
 }
 .detail-sub{
   font-size:.92rem;
-  color:#475569;
+  color:#0f172a;
   margin-bottom:10px;
   font-weight:700;
 }
 
-/* scroll only inside card */
+/* scroll area jadi kaca putih supaya isi tetap jelas */
 .detail-scroll{
   height:calc(100% - 280px);
   overflow:auto;
   padding-right:6px;
 
-  background:#f8fafc;
-  border:1px solid var(--stroke);
+  background: rgba(255,255,255,.9);
+  border:1px solid rgba(255,255,255,.9);
   border-radius:12px;
   padding:10px 12px;
+  backdrop-filter: blur(6px);
 }
 .detail-scroll::-webkit-scrollbar{ width:6px; }
 .detail-scroll::-webkit-scrollbar-thumb{
@@ -204,7 +219,7 @@ body{
   border-radius:10px;
 }
 
-/* kv list */
+/* kv list tetap */
 .kv{
   display:grid;
   grid-template-columns: 1.1fr 1fr;
@@ -224,6 +239,8 @@ body{
   border-radius:8px;
   word-break:break-word;
 }
+
+
 
 /* CTA -> close */
 .btn-cta{
@@ -344,6 +361,21 @@ body{
   align-items:center;
   word-break:break-word;
 }
+/* =========================================================
+   COMPARE ALIGNMENT
+   kiri (3n+1) rata kanan, kanan (3n) rata kiri
+========================================================= */
+.compare-table .compare-cell:nth-child(3n+1){
+  justify-content:flex-end;
+  text-align:right;
+  padding-right:10px;
+}
+.compare-table .compare-cell:nth-child(3n){
+  justify-content:flex-start;
+  text-align:left;
+  padding-left:10px;
+}
+
 
 .compare-label{
   border-radius:10px;
@@ -484,4 +516,32 @@ body{
 .modal-footer{
   background:#fff;
   border-top:1px solid var(--stroke);
+}
+
+/* ===============================
+   BUTTON STATES KHUSUS COMPARE
+=============================== */
+
+/* tombol compare saat aktif (hijau) */
+.btn-compare-active{
+  background:#22c55e;          /* hijau */
+  color:#fff;
+  box-shadow:0 8px 18px rgba(34,197,94,.28);
+}
+.btn-compare-active:hover{
+  transform:translateY(-2px);
+  filter:brightness(1.05);
+  color:#fff;
+}
+
+/* tombol reset/pilih ulang (contoh biru tua) */
+.btn-reset-compare{
+  background:#2563eb;          /* biru */
+  color:#fff;
+  box-shadow:0 8px 18px rgba(37,99,235,.28);
+}
+.btn-reset-compare:hover{
+  transform:translateY(-2px);
+  filter:brightness(1.05);
+  color:#fff;
 }

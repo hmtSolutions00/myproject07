@@ -12,6 +12,81 @@ use App\Models\DetailMenteri;
 
 class DetailMenteriSeeder extends Seeder
 {
+    /**
+     * Mapping hari dalam bahasa Indonesia ke bahasa Inggris
+     */
+    private $hariMap = [
+        'Senin'   => 'Monday',
+        'Selasa'  => 'Tuesday',
+        'Rabu'    => 'Wednesday',
+        'Kamis'   => 'Thursday',
+        'Jumat'   => 'Friday',
+        'Sabtu'   => 'Saturday',
+        'Minggu'  => 'Sunday',
+    ];
+
+    /**
+     * Mapping bulan dalam bahasa Indonesia ke angka
+     */
+    private $bulanMap = [
+        'Januari'   => '01',
+        'Februari'  => '02',
+        'Maret'     => '03',
+        'April'     => '04',
+        'Mei'       => '05',
+        'Juni'      => '06',
+        'Juli'      => '07',
+        'Agustus'   => '08',
+        'September' => '09',
+        'Oktober'   => '10',
+        'November'  => '11',
+        'Desember'  => '12',
+    ];
+
+    /**
+     * Konversi tanggal format Indonesia ke Y-m-d
+     * Contoh input: "Jumat, 11 Desember 1959"
+     * Output: "1959-12-11"
+     */
+    private function convertTanggalIndonesia(?string $tanggalStr): ?string
+    {
+        if (empty($tanggalStr)) {
+            return null;
+        }
+
+        $tanggalStr = trim($tanggalStr);
+
+        // Hapus nama hari jika ada (misal: "Jumat, ")
+        $tanggalStr = preg_replace('/^(Senin|Selasa|Rabu|Kamis|Jumat|Sabtu|Minggu),?\s*/i', '', $tanggalStr);
+
+        // Pattern: "11 Desember 1959" atau "11 Des 1959"
+        if (preg_match('/^(\d{1,2})\s+(\w+)\s+(\d{4})$/i', $tanggalStr, $matches)) {
+            $tanggal = str_pad($matches[1], 2, '0', STR_PAD_LEFT);
+            $bulanStr = ucfirst(strtolower($matches[2]));
+            $tahun = $matches[3];
+
+            // Cek apakah bulan ada di mapping
+            if (isset($this->bulanMap[$bulanStr])) {
+                $bulan = $this->bulanMap[$bulanStr];
+                return "{$tahun}-{$bulan}-{$tanggal}";
+            }
+
+            // Jika tidak ketemu, coba parse dengan Carbon (untuk bulan dalam bahasa Inggris)
+            try {
+                return Carbon::parse($tanggalStr)->format('Y-m-d');
+            } catch (\Throwable $e) {
+                return null;
+            }
+        }
+
+        // Fallback: coba parse langsung dengan Carbon
+        try {
+            return Carbon::parse($tanggalStr)->format('Y-m-d');
+        } catch (\Throwable $e) {
+            return null;
+        }
+    }
+
     public function run(): void
     {
         $path = database_path('seeders/data/detail_menteri.json');
@@ -41,27 +116,22 @@ class DetailMenteriSeeder extends Seeder
                     continue;
                 }
 
-                // ===== parse tanggal lahir (aman untuk banyak format) =====
+                // ===== Parse tanggal lahir dengan fungsi custom =====
                 $tanggalLahirRaw = trim((string)($row['Tanggal Lahir'] ?? ''));
-                $tanggalLahir = null;
+                $tanggalLahir = $this->convertTanggalIndonesia($tanggalLahirRaw);
 
-                if ($tanggalLahirRaw !== '') {
-                    try {
-                        // Carbon parse fleksibel (contoh: "7 Oct 1966", "1966-10-07", "07/10/1966")
-                        $tanggalLahir = Carbon::parse($tanggalLahirRaw)->format('Y-m-d');
-                    } catch (\Throwable $e) {
-                        $tanggalLahir = null; // kalau gagal parse, biarin null
-                    }
+                // Debug: tampilkan hasil konversi
+                if ($tanggalLahirRaw && !$tanggalLahir) {
+                    $this->command->warn("Gagal parse tanggal untuk {$nama}: {$tanggalLahirRaw}");
                 }
 
-                // ===== parse kekayaan jadi angka =====
+                // ===== Parse kekayaan jadi angka =====
                 $rawKekayaan = (string)($row['Kekayaan (Rp)'] ?? '');
                 $kekayaan = $rawKekayaan !== ''
                     ? (int) preg_replace('/\D+/', '', $rawKekayaan)
                     : null;
 
-                // ===== catatan optional =====
-                // kalau kamu mau, bisa gabung beberapa field jadi catatan
+                // ===== Catatan optional =====
                 $catatan = null;
                 if (!empty($row['Catatan'])) {
                     $catatan = trim($row['Catatan']);

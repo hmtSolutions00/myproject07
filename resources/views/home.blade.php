@@ -51,7 +51,9 @@
   <div id="compareGrid"></div>
 
   <div class="d-flex justify-content-end gap-2 mt-3">
-    <button id="btnResetCompare" class="btn-pill btn-outline">Pilih Ulang</button>
+    <button id="btnResetCompare" class="btn-pill btn-reset-compare">
+  Pilih Ulang
+</button>
     <button id="btnExitCompare" class="btn-pill btn-primary">Selesai Bandingkan</button>
   </div>
 </aside>

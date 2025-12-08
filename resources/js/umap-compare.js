@@ -53,7 +53,7 @@ export function renderCompareHTML(a, b) {
     { k: "Harta Level",       a: a.harta_level,            b: b.harta_level },
 
     { k: "Status Hukum",      a: a.display_status_hukum,   b: b.display_status_hukum },
-    { k: "Kekayaan (Rp)",     a: a.display_kekayaan_rp,    b: b.display_kekayaan_rp },
+    { k: "Kekayaan (Rp)",     a: formatRupiah(a.display_kekayaan_rp), b: formatRupiah(b.display_kekayaan_rp) },
   ];
 
   const labelsHTML = fields.map(f => `<div class="k">${f.k}</div>`).join("");
@@ -68,7 +68,7 @@ export function renderCompareHTML(a, b) {
           <img class="compare-photo" src="${d.foto_url || ""}" onerror="this.style.display='none'">
           <div>
             <div class="compare-name">${disp(d.nama)}</div>
-            <div class="compare-sub">${disp(d.kementerian)}</div>
+            <div class="compare-sub">${disp(d.catatan)}</div>
           </div>
         </div>
 

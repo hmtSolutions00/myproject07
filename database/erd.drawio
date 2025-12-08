@@ -1,0 +1,239 @@
+<mxfile host="app.diagrams.net" modified="2025-12-07T00:00:00.000Z" agent="ChatGPT" version="22.1.0" type="device">
+  <diagram id="ERD-DB-FIXED" name="Database ERD FIXED">
+    <mxGraphModel dx="3000" dy="2000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="3000" pageHeight="2000" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- STYLE NOTE:
+             Semua tabel pakai:
+             swimlane + stackLayout,
+             resizeParent=0 autosize=0 => FIXED STABLE -->
+
+        <!-- ========================= USERS ========================= -->
+        <mxCell id="users" value="users"
+          style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=0;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;container=1;autosize=0;fillColor=#dae8fc;strokeColor=#6c8ebf;"
+          vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="240" height="240" as="geometry"/>
+        </mxCell>
+        <mxCell id="users-1" value="🔑 id: bigint PK" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;fontStyle=1;" vertex="1" parent="users"><mxGeometry y="30" width="240" height="24" as="geometry"/></mxCell>
+        <mxCell id="users-2" value="name: string" vertex="1" parent="users" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="54" width="240" height="24" as="geometry"/></mxCell>
+        <mxCell id="users-3" value="email: string UNIQUE" vertex="1" parent="users" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="78" width="240" height="24" as="geometry"/></mxCell>
+        <mxCell id="users-4" value="email_verified_at: timestamp NULL" vertex="1" parent="users" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="102" width="240" height="24" as="geometry"/></mxCell>
+        <mxCell id="users-5" value="password: string" vertex="1" parent="users" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="126" width="240" height="24" as="geometry"/></mxCell>
+        <mxCell id="users-6" value="is_admin: boolean DEFAULT false" vertex="1" parent="users" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="150" width="240" height="24" as="geometry"/></mxCell>
+        <mxCell id="users-7" value="remember_token: string NULL" vertex="1" parent="users" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="174" width="240" height="24" as="geometry"/></mxCell>
+        <mxCell id="users-8" value="created_at, updated_at" vertex="1" parent="users" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="198" width="240" height="24" as="geometry"/></mxCell>
+
+        <!-- ========================= MENTERIS (CENTER) ========================= -->
+        <mxCell id="menteris" value="menteris"
+          style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=0;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;container=1;autosize=0;fillColor=#d5e8d4;strokeColor=#82b366;"
+          vertex="1" parent="1">
+          <mxGeometry x="1120" y="120" width="380" height="740" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="menteris-1" value="🔑 id: bigint PK" parent="menteris" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;fontStyle=1;"><mxGeometry y="30" width="380" height="22" as="geometry"/></mxCell>
+        <mxCell id="menteris-2" value="nama: string" parent="menteris" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="52" width="380" height="22" as="geometry"/></mxCell>
+        <mxCell id="menteris-3" value="foto_path: text NULL" parent="menteris" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="74" width="380" height="22" as="geometry"/></mxCell>
+
+        <mxCell id="menteris-4" value="🔗 kementerian_id: bigint FK*" parent="menteris" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="96" width="380" height="22" as="geometry"/></mxCell>
+        <mxCell id="menteris-5" value="🔗 jenis_kelamin_id: bigint FK*" parent="menteris" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="118" width="380" height="22" as="geometry"/></mxCell>
+        <mxCell id="menteris-6" value="🔗 provinsi_lahir_id: bigint FK*" parent="menteris" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="140" width="380" height="22" as="geometry"/></mxCell>
+        <mxCell id="menteris-7" value="🔗 umur_kategori_id: bigint FK*" parent="menteris" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="162" width="380" height="22" as="geometry"/></mxCell>
+        <mxCell id="menteris-8" value="🔗 partai_id: bigint FK*" parent="menteris" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="184" width="380" height="22" as="geometry"/></mxCell>
+        <mxCell id="menteris-9" value="🔗 jabatan_rangkap_id: bigint FK*" parent="menteris" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="206" width="380" height="22" as="geometry"/></mxCell>
+
+        <mxCell id="menteris-10" value="pernah_menteri: tinyint DEFAULT 0" parent="menteris" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="228" width="380" height="22" as="geometry"/></mxCell>
+
+        <mxCell id="menteris-11" value="🔗 dpr_mpr_id: bigint FK*" parent="menteris" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="250" width="380" height="22" as="geometry"/></mxCell>
+        <mxCell id="menteris-12" value="🔗 militer_polisi_id: bigint FK*" parent="menteris" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="272" width="380" height="22" as="geometry"/></mxCell>
+
+        <mxCell id="menteris-13" value="🔗 lokasi_sma_id: bigint FK* (provinsi)" parent="menteris" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="294" width="380" height="22" as="geometry"/></mxCell>
+        <mxCell id="menteris-14" value="🔗 lokasi_s1_id: bigint FK* (provinsi)" parent="menteris" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="316" width="380" height="22" as="geometry"/></mxCell>
+        <mxCell id="menteris-15" value="🔗 lokasi_s2_id: bigint FK* NULL (provinsi)" parent="menteris" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="338" width="380" height="22" as="geometry"/></mxCell>
+        <mxCell id="menteris-16" value="🔗 lokasi_s3_id: bigint FK* NULL (provinsi)" parent="menteris" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="360" width="380" height="22" as="geometry"/></mxCell>
+
+        <mxCell id="menteris-17" value="🔗 pendidikan_s1_id: bigint FK* (pendidikan)" parent="menteris" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="382" width="380" height="22" as="geometry"/></mxCell>
+        <mxCell id="menteris-18" value="🔗 pendidikan_s2s3_id: bigint FK* NULL (pendidikan)" parent="menteris" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="404" width="380" height="22" as="geometry"/></mxCell>
+
+        <mxCell id="menteris-19" value="🔗 korupsi_level_id: bigint FK*" parent="menteris" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="426" width="380" height="22" as="geometry"/></mxCell>
+        <mxCell id="menteris-20" value="🔗 harta_level_id: bigint FK*" parent="menteris" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="448" width="380" height="22" as="geometry"/></mxCell>
+
+        <mxCell id="menteris-21" value="status: enum(approved|pending|rejected)" parent="menteris" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="470" width="380" height="22" as="geometry"/></mxCell>
+        <mxCell id="menteris-22" value="submitted_by_ip: string NULL" parent="menteris" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="492" width="380" height="22" as="geometry"/></mxCell>
+        <mxCell id="menteris-23" value="created_at, updated_at" parent="menteris" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="514" width="380" height="22" as="geometry"/></mxCell>
+
+        <!-- ========================= DETAIL MENTERIS ========================= -->
+        <mxCell id="detail_menteris" value="detail_menteris"
+          style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=0;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;container=1;autosize=0;fillColor=#fff2cc;strokeColor=#d6b656;"
+          vertex="1" parent="1">
+          <mxGeometry x="1560" y="160" width="320" height="430" as="geometry"/>
+        </mxCell>
+        <mxCell id="detail_menteris-1" value="🔑 id: bigint PK" parent="detail_menteris" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;fontStyle=1;"><mxGeometry y="30" width="320" height="22" as="geometry"/></mxCell>
+        <mxCell id="detail_menteris-2" value="🔗 menteri_id: bigint FK* UNIQUE" parent="detail_menteris" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="52" width="320" height="22" as="geometry"/></mxCell>
+        <mxCell id="detail_menteris-3" value="tempat_lahir: string NULL" parent="detail_menteris" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="74" width="320" height="22" as="geometry"/></mxCell>
+        <mxCell id="detail_menteris-4" value="tanggal_lahir: date NULL" parent="detail_menteris" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="96" width="320" height="22" as="geometry"/></mxCell>
+        <mxCell id="detail_menteris-5" value="umur_tahun: tinyint NULL" parent="detail_menteris" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="118" width="320" height="22" as="geometry"/></mxCell>
+        <mxCell id="detail_menteris-6" value="almamater_sma: string NULL" parent="detail_menteris" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="140" width="320" height="22" as="geometry"/></mxCell>
+        <mxCell id="detail_menteris-7" value="almamater_s1: string NULL" parent="detail_menteris" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="162" width="320" height="22" as="geometry"/></mxCell>
+        <mxCell id="detail_menteris-8" value="almamater_s2: string NULL" parent="detail_menteris" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="184" width="320" height="22" as="geometry"/></mxCell>
+        <mxCell id="detail_menteris-9" value="almamater_s3: string NULL" parent="detail_menteris" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="206" width="320" height="22" as="geometry"/></mxCell>
+        <mxCell id="detail_menteris-10" value="kekayaan_rp: bigint NULL" parent="detail_menteris" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="228" width="320" height="22" as="geometry"/></mxCell>
+        <mxCell id="detail_menteris-11" value="status_hukum: string NULL" parent="detail_menteris" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="250" width="320" height="22" as="geometry"/></mxCell>
+        <mxCell id="detail_menteris-12" value="catatan: text NULL" parent="detail_menteris" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="272" width="320" height="22" as="geometry"/></mxCell>
+        <mxCell id="detail_menteris-13" value="created_at, updated_at" parent="detail_menteris" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="294" width="320" height="22" as="geometry"/></mxCell>
+
+        <!-- ========================= UMAP EMBEDDINGS ========================= -->
+        <mxCell id="umap_embeddings" value="umap_embeddings"
+          style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=0;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;container=1;autosize=0;fillColor=#f8cecc;strokeColor=#b85450;"
+          vertex="1" parent="1">
+          <mxGeometry x="1560" y="620" width="320" height="300" as="geometry"/>
+        </mxCell>
+        <mxCell id="umap_embeddings-1" value="🔑 id: bigint PK" parent="umap_embeddings" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;fontStyle=1;"><mxGeometry y="30" width="320" height="22" as="geometry"/></mxCell>
+        <mxCell id="umap_embeddings-2" value="🔗 menteri_id: bigint FK*" parent="umap_embeddings" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="52" width="320" height="22" as="geometry"/></mxCell>
+        <mxCell id="umap_embeddings-3" value="umap_x: double" parent="umap_embeddings" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="74" width="320" height="22" as="geometry"/></mxCell>
+        <mxCell id="umap_embeddings-4" value="umap_y: double" parent="umap_embeddings" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="96" width="320" height="22" as="geometry"/></mxCell>
+        <mxCell id="umap_embeddings-5" value="color_code: string(7) NULL" parent="umap_embeddings" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="118" width="320" height="22" as="geometry"/></mxCell>
+        <mxCell id="umap_embeddings-6" value="batch_tag: string DEFAULT v1" parent="umap_embeddings" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="140" width="320" height="22" as="geometry"/></mxCell>
+        <mxCell id="umap_embeddings-7" value="is_active: boolean DEFAULT true" parent="umap_embeddings" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="162" width="320" height="22" as="geometry"/></mxCell>
+        <mxCell id="umap_embeddings-8" value="created_at, updated_at" parent="umap_embeddings" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="184" width="320" height="22" as="geometry"/></mxCell>
+
+        <!-- ========================= MASTER TABLES ========================= -->
+
+        <!-- Master Kementerian -->
+        <mxCell id="master_kementerians" value="master_kementerians"
+          style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=0;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;container=1;autosize=0;fillColor=#e1d5e7;strokeColor=#9673a6;"
+          vertex="1" parent="1">
+          <mxGeometry x="360" y="40" width="280" height="170" as="geometry"/>
+        </mxCell>
+        <mxCell id="master_kementerians-1" value="🔑 id: bigint PK" parent="master_kementerians" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;fontStyle=1;"><mxGeometry y="30" width="280" height="22" as="geometry"/></mxCell>
+        <mxCell id="master_kementerians-2" value="nama_kementerian: string UNIQUE" parent="master_kementerians" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="52" width="280" height="22" as="geometry"/></mxCell>
+        <mxCell id="master_kementerians-3" value="kode_umap: int UNIQUE" parent="master_kementerians" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="74" width="280" height="22" as="geometry"/></mxCell>
+        <mxCell id="master_kementerians-4" value="urutan: int NULL" parent="master_kementerians" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="96" width="280" height="22" as="geometry"/></mxCell>
+
+        <!-- Master Jenis Kelamin -->
+        <mxCell id="master_jenis_kelamins" value="master_jenis_kelamins"
+          style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=0;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;container=1;autosize=0;fillColor=#e1d5e7;strokeColor=#9673a6;"
+          vertex="1" parent="1">
+          <mxGeometry x="360" y="240" width="280" height="140" as="geometry"/>
+        </mxCell>
+        <mxCell id="master_jenis_kelamins-1" value="🔑 id: bigint PK" parent="master_jenis_kelamins" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;fontStyle=1;"><mxGeometry y="30" width="280" height="22" as="geometry"/></mxCell>
+        <mxCell id="master_jenis_kelamins-2" value="label: string UNIQUE" parent="master_jenis_kelamins" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="52" width="280" height="22" as="geometry"/></mxCell>
+        <mxCell id="master_jenis_kelamins-3" value="kode_umap: tinyint UNIQUE" parent="master_jenis_kelamins" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="74" width="280" height="22" as="geometry"/></mxCell>
+
+        <!-- Master Provinsi -->
+        <mxCell id="master_provinsis" value="master_provinsis"
+          style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=0;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;container=1;autosize=0;fillColor=#e1d5e7;strokeColor=#9673a6;"
+          vertex="1" parent="1">
+          <mxGeometry x="360" y="410" width="280" height="160" as="geometry"/>
+        </mxCell>
+        <mxCell id="master_provinsis-1" value="🔑 id: bigint PK" parent="master_provinsis" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;fontStyle=1;"><mxGeometry y="30" width="280" height="22" as="geometry"/></mxCell>
+        <mxCell id="master_provinsis-2" value="nama: string UNIQUE" parent="master_provinsis" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="52" width="280" height="22" as="geometry"/></mxCell>
+        <mxCell id="master_provinsis-3" value="kode_umap: tinyint UNIQUE" parent="master_provinsis" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="74" width="280" height="22" as="geometry"/></mxCell>
+        <mxCell id="master_provinsis-4" value="region_order: tinyint NULL" parent="master_provinsis" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="96" width="280" height="22" as="geometry"/></mxCell>
+
+        <!-- Master Umur Kategori -->
+        <mxCell id="master_umur_kategoris" value="master_umur_kategoris"
+          style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=0;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;container=1;autosize=0;fillColor=#e1d5e7;strokeColor=#9673a6;"
+          vertex="1" parent="1">
+          <mxGeometry x="760" y="40" width="280" height="140" as="geometry"/>
+        </mxCell>
+        <mxCell id="master_umur_kategoris-1" value="🔑 id: bigint PK" parent="master_umur_kategoris" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;fontStyle=1;"><mxGeometry y="30" width="280" height="22" as="geometry"/></mxCell>
+        <mxCell id="master_umur_kategoris-2" value="label: string UNIQUE" parent="master_umur_kategoris" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="52" width="280" height="22" as="geometry"/></mxCell>
+        <mxCell id="master_umur_kategoris-3" value="kode_umap: tinyint UNIQUE" parent="master_umur_kategoris" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="74" width="280" height="22" as="geometry"/></mxCell>
+
+        <!-- Master Partai -->
+        <mxCell id="master_partais" value="master_partais"
+          style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=0;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;container=1;autosize=0;fillColor=#e1d5e7;strokeColor=#9673a6;"
+          vertex="1" parent="1">
+          <mxGeometry x="760" y="210" width="280" height="140" as="geometry"/>
+        </mxCell>
+        <mxCell id="master_partais-1" value="🔑 id: bigint PK" parent="master_partais" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;fontStyle=1;"><mxGeometry y="30" width="280" height="22" as="geometry"/></mxCell>
+        <mxCell id="master_partais-2" value="nama_partai: string UNIQUE" parent="master_partais" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="52" width="280" height="22" as="geometry"/></mxCell>
+        <mxCell id="master_partais-3" value="kode_umap: tinyint UNIQUE" parent="master_partais" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="74" width="280" height="22" as="geometry"/></mxCell>
+
+        <!-- Master Jabatan Rangkap -->
+        <mxCell id="master_jabatan_rangkaps" value="master_jabatan_rangkaps"
+          style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=0;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;container=1;autosize=0;fillColor=#e1d5e7;strokeColor=#9673a6;"
+          vertex="1" parent="1">
+          <mxGeometry x="760" y="380" width="280" height="140" as="geometry"/>
+        </mxCell>
+        <mxCell id="master_jabatan_rangkaps-1" value="🔑 id: bigint PK" parent="master_jabatan_rangkaps" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;fontStyle=1;"><mxGeometry y="30" width="280" height="22" as="geometry"/></mxCell>
+        <mxCell id="master_jabatan_rangkaps-2" value="label: string UNIQUE" parent="master_jabatan_rangkaps" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="52" width="280" height="22" as="geometry"/></mxCell>
+        <mxCell id="master_jabatan_rangkaps-3" value="kode_umap: tinyint UNIQUE" parent="master_jabatan_rangkaps" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="74" width="280" height="22" as="geometry"/></mxCell>
+
+        <!-- Master DPR MPR -->
+        <mxCell id="master_dpr_mprs" value="master_dpr_mprs"
+          style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=0;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;container=1;autosize=0;fillColor=#e1d5e7;strokeColor=#9673a6;"
+          vertex="1" parent="1">
+          <mxGeometry x="40" y="740" width="280" height="140" as="geometry"/>
+        </mxCell>
+        <mxCell id="master_dpr_mprs-1" value="🔑 id: bigint PK" parent="master_dpr_mprs" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;fontStyle=1;"><mxGeometry y="30" width="280" height="22" as="geometry"/></mxCell>
+        <mxCell id="master_dpr_mprs-2" value="label: string UNIQUE" parent="master_dpr_mprs" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="52" width="280" height="22" as="geometry"/></mxCell>
+        <mxCell id="master_dpr_mprs-3" value="kode_umap: tinyint UNIQUE" parent="master_dpr_mprs" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="74" width="280" height="22" as="geometry"/></mxCell>
+
+        <!-- Master Militer Polisi -->
+        <mxCell id="master_militer_polisis" value="master_militer_polisis"
+          style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=0;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;container=1;autosize=0;fillColor=#e1d5e7;strokeColor=#9673a6;"
+          vertex="1" parent="1">
+          <mxGeometry x="340" y="740" width="280" height="140" as="geometry"/>
+        </mxCell>
+        <mxCell id="master_militer_polisis-1" value="🔑 id: bigint PK" parent="master_militer_polisis" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;fontStyle=1;"><mxGeometry y="30" width="280" height="22" as="geometry"/></mxCell>
+        <mxCell id="master_militer_polisis-2" value="label: string UNIQUE" parent="master_militer_polisis" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="52" width="280" height="22" as="geometry"/></mxCell>
+        <mxCell id="master_militer_polisis-3" value="kode_umap: tinyint UNIQUE" parent="master_militer_polisis" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="74" width="280" height="22" as="geometry"/></mxCell>
+
+        <!-- Master Pendidikan -->
+        <mxCell id="master_pendidikans" value="master_pendidikans"
+          style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=0;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;container=1;autosize=0;fillColor=#e1d5e7;strokeColor=#9673a6;"
+          vertex="1" parent="1">
+          <mxGeometry x="640" y="740" width="320" height="180" as="geometry"/>
+        </mxCell>
+        <mxCell id="master_pendidikans-1" value="🔑 id: bigint PK" parent="master_pendidikans" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;fontStyle=1;"><mxGeometry y="30" width="320" height="22" as="geometry"/></mxCell>
+        <mxCell id="master_pendidikans-2" value="label_jurusan: string UNIQUE" parent="master_pendidikans" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="52" width="320" height="22" as="geometry"/></mxCell>
+        <mxCell id="master_pendidikans-3" value="kode_umap: tinyint" parent="master_pendidikans" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="74" width="320" height="22" as="geometry"/></mxCell>
+        <mxCell id="master_pendidikans-4" value="jenjang_default: enum(s1|s2s3|umum)" parent="master_pendidikans" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="96" width="320" height="22" as="geometry"/></mxCell>
+        <mxCell id="master_pendidikans-5" value="unique(kode_umap, jenjang_default)" parent="master_pendidikans" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="118" width="320" height="22" as="geometry"/></mxCell>
+
+        <!-- Master Korupsi Levels -->
+        <mxCell id="master_korupsi_levels" value="master_korupsi_levels"
+          style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=0;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;container=1;autosize=0;fillColor=#e1d5e7;strokeColor=#9673a6;"
+          vertex="1" parent="1">
+          <mxGeometry x="980" y="740" width="280" height="140" as="geometry"/>
+        </mxCell>
+        <mxCell id="master_korupsi_levels-1" value="🔑 id: bigint PK" parent="master_korupsi_levels" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;fontStyle=1;"><mxGeometry y="30" width="280" height="22" as="geometry"/></mxCell>
+        <mxCell id="master_korupsi_levels-2" value="label: string UNIQUE" parent="master_korupsi_levels" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="52" width="280" height="22" as="geometry"/></mxCell>
+        <mxCell id="master_korupsi_levels-3" value="kode_umap: tinyint UNIQUE" parent="master_korupsi_levels" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="74" width="280" height="22" as="geometry"/></mxCell>
+
+        <!-- Master Harta Levels -->
+        <mxCell id="master_harta_levels" value="master_harta_levels"
+          style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=0;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;container=1;autosize=0;fillColor=#e1d5e7;strokeColor=#9673a6;"
+          vertex="1" parent="1">
+          <mxGeometry x="1280" y="740" width="280" height="140" as="geometry"/>
+        </mxCell>
+        <mxCell id="master_harta_levels-1" value="🔑 id: bigint PK" parent="master_harta_levels" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;fontStyle=1;"><mxGeometry y="30" width="280" height="22" as="geometry"/></mxCell>
+        <mxCell id="master_harta_levels-2" value="label: string UNIQUE" parent="master_harta_levels" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="52" width="280" height="22" as="geometry"/></mxCell>
+        <mxCell id="master_harta_levels-3" value="kode_umap: tinyint UNIQUE" parent="master_harta_levels" vertex="1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;"><mxGeometry y="74" width="280" height="22" as="geometry"/></mxCell>
+
+        <!-- ========================= RELATIONS ========================= -->
+
+        <!-- menteris -> masters -->
+        <mxCell id="r1" style="endArrow=block;html=1;strokeColor=#666666;" edge="1" parent="1" source="menteris" target="master_kementerians"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="r2" style="endArrow=block;html=1;strokeColor=#666666;" edge="1" parent="1" source="menteris" target="master_jenis_kelamins"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="r3" style="endArrow=block;html=1;strokeColor=#666666;" edge="1" parent="1" source="menteris" target="master_provinsis"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="r4" style="endArrow=block;html=1;strokeColor=#666666;" edge="1" parent="1" source="menteris" target="master_umur_kategoris"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="r5" style="endArrow=block;html=1;strokeColor=#666666;" edge="1" parent="1" source="menteris" target="master_partais"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="r6" style="endArrow=block;html=1;strokeColor=#666666;" edge="1" parent="1" source="menteris" target="master_jabatan_rangkaps"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="r7" style="endArrow=block;html=1;strokeColor=#666666;" edge="1" parent="1" source="menteris" target="master_dpr_mprs"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="r8" style="endArrow=block;html=1;strokeColor=#666666;" edge="1" parent="1" source="menteris" target="master_militer_polisis"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="r9" style="endArrow=block;html=1;strokeColor=#666666;" edge="1" parent="1" source="menteris" target="master_pendidikans"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="r10" style="endArrow=block;html=1;strokeColor=#666666;" edge="1" parent="1" source="menteris" target="master_korupsi_levels"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="r11" style="endArrow=block;html=1;strokeColor=#666666;" edge="1" parent="1" source="menteris" target="master_harta_levels"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- child tables -->
+        <mxCell id="r12" style="endArrow=block;html=1;strokeColor=#666666;" edge="1" parent="1" source="detail_menteris" target="menteris"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="r13" style="endArrow=block;html=1;strokeColor=#666666;" edge="1" parent="1" source="umap_embeddings" target="menteris"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

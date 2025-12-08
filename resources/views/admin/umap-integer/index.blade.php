@@ -22,16 +22,6 @@
           Recompute UMAP
         </button>
       </form>
-
-      {{-- Clear --}}
-      <form method="POST" action="{{ route('admin.umap.integer.clear') }}">
-        @csrf
-        <button type="submit"
-                class="btn btn-outline-danger fw-bold rounded-pill px-4"
-                onclick="return confirm('INI AKAN MENGHAPUS SEMUA umap_embeddings. Yakin?')">
-          Clear UMAP
-        </button>
-      </form>
     </div>
   </div>
 
