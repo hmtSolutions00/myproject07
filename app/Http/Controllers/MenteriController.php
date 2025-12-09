@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\File;
 
 use App\Models\Menteri;
 use App\Models\MasterProvinsi;
@@ -45,30 +45,64 @@ class MenteriController extends Controller
             'harta_level_id'     => ['required','integer'],
 
             'pernah_menteri'     => ['required','in:0,1'],
+
+            // ========= DETAIL (baru) =========
+            'tempat_lahir'   => ['nullable','string','max:255'],
+            'tanggal_lahir'  => ['nullable','date'],
+            'umur_tahun'     => ['nullable','integer','min:0'],
+
+            'almamater_sma'  => ['nullable','string','max:255'],
+            'almamater_s1'   => ['nullable','string','max:255'],
+            'almamater_s2'   => ['nullable','string','max:255'],
+            'almamater_s3'   => ['nullable','string','max:255'],
+
+            'kekayaan_rp'    => ['nullable','numeric','min:0'],
+            'status_hukum'   => ['nullable','string','max:255'],
+
+            // catatan diganti jabatan
+            'jabatan'        => ['nullable','string'],
         ]);
 
         // ========= FOTO HANDLER =========
         $fotoPath = null;
 
+        // ✅ base url otomatis sesuai environment
+        $baseUrl = rtrim(config('app.url') ?? url('/'), '/');
+
+        // MODE URL
         if (($validated['foto_mode'] ?? null) === 'url') {
             $request->validate([
                 'foto_path' => ['required','url']
             ]);
-            $fotoPath = $validated['foto_path'];
+            $fotoPath = $validated['foto_path']; // sudah full URL
         }
 
+        // MODE FILE (SIMPAN KE public/uploads_menteri)
         if (($validated['foto_mode'] ?? null) === 'file') {
             $request->validate([
                 'foto_file' => ['required','image','max:2048']
             ]);
 
             $file = $request->file('foto_file');
+
+            // folder tujuan di public
+            $publicDir = public_path('uploads_menteri');
+
+            // pastikan folder ada
+            if (!File::exists($publicDir)) {
+                File::makeDirectory($publicDir, 0755, true);
+            }
+
             $name = Str::uuid().'.'.$file->getClientOriginalExtension();
-            $stored = $file->storeAs('public/foto-menteri', $name);
-            $fotoPath = Storage::url($stored);
+
+            // pindahkan ke public/uploads_menteri
+            $file->move($publicDir, $name);
+
+            // URL full yang disimpan di DB
+            $fotoPath = $baseUrl . '/uploads_menteri/' . $name;
         }
 
-        // ========= FALLBACK NULLABLE =========
+        // ========= FALLBACK NULLABLE (seperti sebelumnya) =========
         $prov0 = MasterProvinsi::where('kode_umap', 0)->value('id');
         $pend0 = MasterPendidikan::where('jenjang_default','s2s3')
             ->where('kode_umap', 0)
@@ -86,7 +120,7 @@ class MenteriController extends Controller
             ? $pend0
             : $validated['pendidikan_s2s3_id'];
 
-        // ========= INSERT =========
+        // ========= INSERT MENTERI =========
         $menteri = Menteri::create([
             'nama'              => $validated['nama'],
             'foto_path'         => $fotoPath,
@@ -114,20 +148,34 @@ class MenteriController extends Controller
             'korupsi_level_id'   => $validated['korupsi_level_id'],
             'harta_level_id'     => $validated['harta_level_id'],
 
-            // ✅ publik langsung masuk approved
+            // publik langsung approved
             'status'             => 'approved',
             'submitted_by_ip'    => $request->ip(),
         ]);
 
+        // ========= INSERT DETAIL MENTERI =========
+        $menteri->detail()->create([
+            'tempat_lahir'  => $validated['tempat_lahir'] ?? null,
+            'tanggal_lahir' => $validated['tanggal_lahir'] ?? null,
+            'umur_tahun'    => $validated['umur_tahun'] ?? null,
+            'almamater_sma' => $validated['almamater_sma'] ?? null,
+            'almamater_s1'  => $validated['almamater_s1'] ?? null,
+            'almamater_s2'  => $validated['almamater_s2'] ?? null,
+            'almamater_s3'  => $validated['almamater_s3'] ?? null,
+            'kekayaan_rp'   => $validated['kekayaan_rp'] ?? null,
+            'status_hukum'  => $validated['status_hukum'] ?? null,
+            'catatan'       => $validated['jabatan'] ?? null,
+        ]);
+
         // ========= RECOMPUTE FULL =========
         try {
-            $umapService->recomputeAll(); 
+            $umapService->recomputeAll();
         } catch (\Throwable $e) {
             \Log::error("UMAP recompute gagal setelah insert menteri {$menteri->id}: ".$e->getMessage());
-            // tetap lanjut redirect, biar user gak error
         }
 
         return redirect('/')
-            ->with('success', 'Data berhasil ditambahkan dan UMAP sudah diperbarui.');
+            ->with('success', 'Data berhasil ditambahkan dan UMAP sudah diperbarui.')
+            ->with('new_menteri_id', $menteri->id);
     }
 }

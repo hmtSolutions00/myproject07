@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Str; 
+use Illuminate\Support\Facades\Storage;
 
 class Menteri extends Model
 {
@@ -70,6 +72,27 @@ class Menteri extends Model
 public function detail(): HasOne
 {
     return $this->hasOne(\App\Models\DetailMenteri::class, 'menteri_id');
+}
+public function getFotoUrlAttribute()
+{
+    $p = $this->foto_path;
+    if (!$p) return null;
+
+    // sudah url absolut
+    if (Str::startsWith($p, ['http://', 'https://'])) return $p;
+
+    // path storage relatif
+    if (Str::startsWith($p, ['/storage/', 'storage/'])) {
+        return url($p);
+    }
+
+    // path legacy "public/..."
+    if (Str::startsWith($p, ['public/'])) {
+        return url(Storage::url($p));
+    }
+
+    // fallback: anggap relative biasa
+    return url($p);
 }
 
 }

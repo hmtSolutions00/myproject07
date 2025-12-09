@@ -13,30 +13,60 @@ async function loadMasters() {
     const res = await fetch("/api/masters");
     const m = await res.json();
 
-    const fillSelect = (el, items, labelKey = "label", extraFirst = null) => {
-      if (!el) return;
-      el.innerHTML = "";
+   const fillSelect = (el, items, labelKey = "label", extraFirst = null) => {
+  if (!el) return;
 
-      if (extraFirst) {
-        const opt0 = document.createElement("option");
-        opt0.value = extraFirst.value;
-        opt0.textContent = extraFirst.text;
-        el.appendChild(opt0);
-      }
+  const toOption = (it) => ({
+    value: it.id,
+    text:
+      it[labelKey] ??
+      it.nama ??
+      it.nama_kementerian ??
+      it.nama_partai ??
+      it.label_jurusan ??
+      "-",
+  });
 
-      (items || []).forEach((it) => {
-        const opt = document.createElement("option");
-        opt.value = it.id;
-        opt.textContent =
-          it[labelKey] ??
-          it.nama ??
-          it.nama_kementerian ??
-          it.nama_partai ??
-          it.label_jurusan ??
-          "-";
-        el.appendChild(opt);
-      });
-    };
+  const options = (items || []).map(toOption);
+
+  // ✅ kalau sudah di-enhance TomSelect, update lewat API TomSelect
+  if (el.tomselect) {
+    const ts = el.tomselect;
+
+    ts.clearOptions();
+
+    if (extraFirst) {
+      ts.addOption({ value: extraFirst.value, text: extraFirst.text });
+    }
+
+    ts.addOptions(options);
+    ts.refreshOptions(false);
+
+    // kalau sebelumnya kosong, set ke first option biar gak blank
+    if (!ts.getValue() && (extraFirst || options.length)) {
+      ts.setValue(extraFirst ? extraFirst.value : options[0].value, true);
+    }
+
+    return;
+  }
+
+  // ✅ fallback native select biasa
+  el.innerHTML = "";
+
+  if (extraFirst) {
+    const opt0 = document.createElement("option");
+    opt0.value = extraFirst.value;
+    opt0.textContent = extraFirst.text;
+    el.appendChild(opt0);
+  }
+
+  options.forEach((op) => {
+    const opt = document.createElement("option");
+    opt.value = op.value;
+    opt.textContent = op.text;
+    el.appendChild(opt);
+  });
+};
 
     // SELECTS
     fillSelect(
@@ -257,6 +287,12 @@ document.addEventListener("change", (e) => {
   let compareMode = false;
   let compareIds = []; // max 2
 
+  // ✅ AUTO LOCK: ambil id menteri baru dari blade (session)
+  const newId = window.__NEW_MENTERI_ID__ || null;
+  const autoLockTarget = newId
+    ? data.find(d => String(d.id) === String(newId))
+    : null;
+
   // hover template (pakai display + dispUmur)
   const hoverTemplate = (d, color) => `
     <div style="width:320px; background:${color}; border-radius:12px; padding:8px;">
@@ -275,7 +311,7 @@ document.addEventListener("change", (e) => {
           <div class="k">Jenis Kelamin</div><div class="v">${disp(d.jenis_kelamin)}</div>
           <div class="k">Umur</div><div class="v">${dispUmur(d)}</div>
           <div class="k">Partai</div><div class="v">${disp(d.partai)}</div>
-          <div class="k">Bidang S1</div><div class="v">${disp(d.pendidikan_s1)}</div>
+          <div class="k">Bidang Pendidikan</div><div class="v">${disp(d.pendidikan_s1)}</div>
         </div>
 
         <div style="margin-top:6px; font-size:.75rem; color:#475569;">
@@ -337,7 +373,6 @@ document.addEventListener("change", (e) => {
           <div class="k">Umur (Tahun)</div><div class="v">${dispUmur(d)}</div>
 
           <div class="k">Provinsi Lahir</div><div class="v">${disp(d.provinsi_lahir)}</div>
-          <div class="k">Umur Kategori</div><div class="v">${disp(d.umur)}</div>
 
           <div class="k">Partai</div><div class="v">${disp(d.partai)}</div>
           <div class="k">Jabatan Rangkap</div><div class="v">${disp(d.jabatan_rangkap)}</div>
@@ -349,8 +384,7 @@ document.addEventListener("change", (e) => {
           <div class="k">Almamater S2</div><div class="v">${disp(d.display_almamater_s2)}</div>
           <div class="k">Almamater S3</div><div class="v">${disp(d.display_almamater_s3)}</div>
 
-          <div class="k">Bidang S1</div><div class="v">${disp(d.pendidikan_s1)}</div>
-          <div class="k">Bidang S2/S3</div><div class="v">${disp(d.pendidikan_s2s3)}</div>
+          <div class="k">Bidang Pendidikan</div><div class="v">${disp(d.pendidikan_s1)}</div>
 
 
           <div class="k">Status Hukum</div><div class="v">${disp(d.display_status_hukum)}</div>
@@ -404,7 +438,6 @@ document.addEventListener("change", (e) => {
       { label:"Tanggal Lahir",   a:leftD.display_tanggal_lahir,b:rightD.display_tanggal_lahir },
       { label:"Umur (Tahun)",    a:dispUmur(leftD),            b:dispUmur(rightD) },
       { label:"Provinsi Lahir",  a:leftD.provinsi_lahir,       b:rightD.provinsi_lahir },
-      { label:"Umur Kategori",   a:leftD.umur,                 b:rightD.umur },
       { label:"Partai",          a:leftD.partai,               b:rightD.partai },
       { label:"Jabatan Rangkap", a:leftD.jabatan_rangkap,      b:rightD.jabatan_rangkap },
       { label:"Karir DPR/MPR",   a:leftD.dpr_mpr,              b:rightD.dpr_mpr },
@@ -413,8 +446,7 @@ document.addEventListener("change", (e) => {
       { label:"Almamater S1",    a:leftD.display_almamater_s1, b:rightD.display_almamater_s1 },
       { label:"Almamater S2",    a:leftD.display_almamater_s2, b:rightD.display_almamater_s2 },
       { label:"Almamater S3",    a:leftD.display_almamater_s3, b:rightD.display_almamater_s3 },
-      { label:"Bidang S1",       a:leftD.pendidikan_s1,        b:rightD.pendidikan_s1 },
-      { label:"Bidang S2/S3",    a:leftD.pendidikan_s2s3,      b:rightD.pendidikan_s2s3 },
+      { label:"Bidang Pendidikan",       a:leftD.pendidikan_s1,        b:rightD.pendidikan_s1 },
       { label:"Status Hukum",    a:leftD.display_status_hukum, b:rightD.display_status_hukum },
       { label:"Kekayaan (Rp)",   a:formatRupiah(leftD.display_kekayaan_rp), b:formatRupiah(rightD.display_kekayaan_rp) },
     ];
@@ -590,4 +622,30 @@ function exitCompareMode() {
 
   // ===== close detail external button (kalau ada di blade) =====
   btnCloseDetail?.addEventListener("click", closeDetailDock);
+
+  // ✅ AUTO LOCK EKSEKUSI SETELAH NODES READY
+  if (autoLockTarget) {
+    const i = data.indexOf(autoLockTarget);
+    const color = getColor(autoLockTarget, i);
+
+    lockedId = autoLockTarget.id;
+
+    nodes
+      .attr("fill", (n, ii) => n.id === lockedId ? "#000000" : getColor(n, ii))
+      .attr("r", (n) => (n.id === lockedId ? 8 : 5));
+
+    renderFullCard(autoLockTarget, color);
+
+    // optional: auto zoom ke titik baru biar langsung kelihatan
+    const tx = x(+autoLockTarget.umap_x);
+    const ty = y(+autoLockTarget.umap_y);
+    svg.transition()
+      .duration(350)
+      .call(
+        zoom.transform,
+        d3.zoomIdentity
+          .translate(width / 2 - tx, height / 2 - ty)
+          .scale(1.6)
+      );
+  }
 })();
