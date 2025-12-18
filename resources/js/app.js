@@ -13,60 +13,110 @@ async function loadMasters() {
     const res = await fetch("/api/masters");
     const m = await res.json();
 
-   const fillSelect = (el, items, labelKey = "label", extraFirst = null) => {
-  if (!el) return;
+    const fillSelect = (el, items, labelKey = "label", extraFirst = null) => {
+      if (!el) return;
 
-  const toOption = (it) => ({
-    value: it.id,
-    text:
-      it[labelKey] ??
-      it.nama ??
-      it.nama_kementerian ??
-      it.nama_partai ??
-      it.label_jurusan ??
-      "-",
-  });
+      const toOption = (it) => ({
+        value: it.id,
+        text:
+          it[labelKey] ??
+          it.nama ??
+          it.nama_kementerian ??
+          it.nama_partai ??
+          it.label_jurusan ??
+          "-",
+      });
 
-  const options = (items || []).map(toOption);
+      const options = (items || []).map(toOption);
 
-  // ✅ kalau sudah di-enhance TomSelect, update lewat API TomSelect
-  if (el.tomselect) {
-    const ts = el.tomselect;
+      // ✅ kalau sudah di-enhance TomSelect, update lewat API TomSelect
+      if (el.tomselect) {
+        const ts = el.tomselect;
 
-    ts.clearOptions();
+        ts.clearOptions();
 
-    if (extraFirst) {
-      ts.addOption({ value: extraFirst.value, text: extraFirst.text });
-    }
+        if (extraFirst) {
+          ts.addOption({ value: extraFirst.value, text: extraFirst.text });
+        }
 
-    ts.addOptions(options);
-    ts.refreshOptions(false);
+        ts.addOptions(options);
+        ts.refreshOptions(false);
 
-    // kalau sebelumnya kosong, set ke first option biar gak blank
-    if (!ts.getValue() && (extraFirst || options.length)) {
-      ts.setValue(extraFirst ? extraFirst.value : options[0].value, true);
-    }
+        // kalau sebelumnya kosong, set ke first option biar gak blank
+        if (!ts.getValue() && (extraFirst || options.length)) {
+          ts.setValue(extraFirst ? extraFirst.value : options[0].value, true);
+        }
 
-    return;
-  }
+        return;
+      }
 
-  // ✅ fallback native select biasa
-  el.innerHTML = "";
+      // ✅ fallback native select biasa
+      el.innerHTML = "";
 
-  if (extraFirst) {
-    const opt0 = document.createElement("option");
-    opt0.value = extraFirst.value;
-    opt0.textContent = extraFirst.text;
-    el.appendChild(opt0);
-  }
+      if (extraFirst) {
+        const opt0 = document.createElement("option");
+        opt0.value = extraFirst.value;
+        opt0.textContent = extraFirst.text;
+        el.appendChild(opt0);
+      }
 
-  options.forEach((op) => {
-    const opt = document.createElement("option");
-    opt.value = op.value;
-    opt.textContent = op.text;
-    el.appendChild(opt);
-  });
-};
+      options.forEach((op) => {
+        const opt = document.createElement("option");
+        opt.value = op.value;
+        opt.textContent = op.text;
+        el.appendChild(opt);
+      });
+    };
+
+    // ✅ helper: clone options dari select A ke select B (native / tomselect aman)
+    const cloneSelectOptions = (fromEl, toEl, extraFirst = null) => {
+      if (!fromEl || !toEl) return;
+
+      // kalau dua-duanya tomselect
+      if (fromEl.tomselect && toEl.tomselect) {
+        const fromTs = fromEl.tomselect;
+        const toTs = toEl.tomselect;
+
+        toTs.clearOptions();
+
+        if (extraFirst) {
+          toTs.addOption({ value: extraFirst.value, text: extraFirst.text });
+        }
+
+        const opts = Object.values(fromTs.options).map((o) => ({
+          value: o.value,
+          text: o.text,
+        }));
+
+        toTs.addOptions(opts);
+        toTs.refreshOptions(false);
+
+        if (!toTs.getValue() && (extraFirst || opts.length)) {
+          toTs.setValue(extraFirst ? extraFirst.value : opts[0].value, true);
+        }
+        return;
+      }
+
+      // native fallback
+      toEl.innerHTML = "";
+
+      if (extraFirst) {
+        const opt0 = document.createElement("option");
+        opt0.value = extraFirst.value;
+        opt0.textContent = extraFirst.text;
+        toEl.appendChild(opt0);
+      }
+
+      for (const opt of fromEl.options) {
+        const c = opt.cloneNode(true);
+        toEl.appendChild(c);
+      }
+
+      // kalau belum ada selected value, set default
+      if (!toEl.value && toEl.options.length) {
+        toEl.value = extraFirst ? String(extraFirst.value) : toEl.options[0].value;
+      }
+    };
 
     // SELECTS
     fillSelect(
@@ -110,18 +160,23 @@ async function loadMasters() {
       { value: 0, text: "Tidak Ada / Default" }
     );
 
-    // Pendidikan
-    fillSelect(
-      document.getElementById("master-pendidikan-s1"),
-      m.pendidikan_umum,
-      "label_jurusan"
-    );
-    fillSelect(
-      document.getElementById("master-pendidikan-s2s3"),
-      m.pendidikan_s2s3,
-      "label_jurusan",
-      { value: 0, text: "Tidak Ada / Default" }
-    );
+    // ===========================
+    // ✅ Pendidikan (FIX UTAMA)
+    // ===========================
+    const elS1 = document.getElementById("master-pendidikan-s1");
+    const elS2S3 = document.getElementById("master-pendidikan-s2s3");
+
+    // 1) isi S1 dari pendidikan_umum
+    fillSelect(elS1, m.pendidikan_umum, "label_jurusan");
+
+    // 2) isi S2/S3 dengan clone dari S1 (karena opsi sama)
+    //    (tetap ada "Tidak Ada / Default" di paling atas)
+    cloneSelectOptions(elS1, elS2S3, { value: 0, text: "Tidak Ada / Default" });
+
+    // debug optional
+    console.log("masters:", m);
+    console.log("pendidikan_umum length:", (m.pendidikan_umum || []).length);
+    console.log("S2S3 options length:", elS2S3?.options?.length || 0);
 
     // Korupsi & Harta
     fillSelect(
@@ -149,7 +204,17 @@ async function loadMasters() {
     console.error("loadMasters error:", err);
   }
 }
-loadMasters();
+
+let __mastersLoaded = false;
+
+document.addEventListener("shown.bs.modal", async (e) => {
+  if (e.target.id !== "modalAddData") return;
+
+  if (!__mastersLoaded) {
+    await loadMasters();
+    __mastersLoaded = true;
+  }
+});
 
 // switch foto mode url / file
 document.addEventListener("change", (e) => {
@@ -169,7 +234,6 @@ document.addEventListener("change", (e) => {
     urlWrap.classList.remove("d-none");
   }
 });
-
 
 /* =========================================================
    UMAP + DETAIL + COMPARE ONEPAGE
@@ -199,13 +263,11 @@ document.addEventListener("change", (e) => {
   // ✅ format angka rupiah dengan titik pemisah ribuan
   const formatRupiah = (value) => {
     if (value === null || value === undefined || value === "") return "-";
-    
-    // Jika value sudah berupa string angka atau number
-    const numStr = String(value).replace(/\D/g, ''); // hapus semua non-digit
+
+    const numStr = String(value).replace(/\D/g, "");
     if (!numStr || numStr === "0") return "-";
-    
-    // Tambahkan titik pemisah ribuan
-    return numStr.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+    return numStr.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   };
 
   // helper precedence: detail menang, fallback ke base
@@ -219,15 +281,12 @@ document.addEventListener("change", (e) => {
 
   // umur display: detail (display_umur_tahun / umur_tahun) menang
   const dispUmur = (d) => {
-    // kalau API kasih display_umur_tahun, pakai itu
     if (d.display_umur_tahun !== null && d.display_umur_tahun !== undefined && d.display_umur_tahun !== "")
       return d.display_umur_tahun;
 
-    // fallback angka umur_tahun mentah
     if (d.umur_tahun !== null && d.umur_tahun !== undefined && d.umur_tahun !== "")
       return `${d.umur_tahun} Tahun`;
 
-    // terakhir umur kategori
     return disp(d.umur);
   };
 
@@ -293,7 +352,7 @@ document.addEventListener("change", (e) => {
     ? data.find(d => String(d.id) === String(newId))
     : null;
 
-  // hover template (pakai display + dispUmur)
+  // hover template
   const hoverTemplate = (d, color) => `
     <div style="width:320px; background:${color}; border-radius:12px; padding:8px;">
       <div class="hover-glass">
@@ -348,11 +407,9 @@ document.addEventListener("change", (e) => {
     tipInstance.show();
   }
 
-  // DETAIL FULL (pakai display_* dan precedence detail menang)
   function renderFullCard(d, color) {
     if (!dockLeft) return;
 
-    // set accent buat css dock putih + border warna
     dockLeft.style.setProperty("--dock-accent", color);
 
     dockLeft.innerHTML = `
@@ -386,7 +443,6 @@ document.addEventListener("change", (e) => {
 
           <div class="k">Bidang Pendidikan</div><div class="v">${disp(d.pendidikan_s1)}</div>
 
-
           <div class="k">Status Hukum</div><div class="v">${disp(d.display_status_hukum)}</div>
           <div class="k">Kekayaan (Rp)</div><div class="v">${formatRupiah(d.display_kekayaan_rp)}</div>
         </div>
@@ -413,7 +469,6 @@ document.addEventListener("change", (e) => {
       .attr("opacity", 0.9);
   }
 
-  // COMPARE DOCK (pakai display_* juga)
   function renderCompareDock() {
     const grid = document.getElementById("compareGrid");
     if (!grid) return;
@@ -446,7 +501,7 @@ document.addEventListener("change", (e) => {
       { label:"Almamater S1",    a:leftD.display_almamater_s1, b:rightD.display_almamater_s1 },
       { label:"Almamater S2",    a:leftD.display_almamater_s2, b:rightD.display_almamater_s2 },
       { label:"Almamater S3",    a:leftD.display_almamater_s3, b:rightD.display_almamater_s3 },
-      { label:"Bidang Pendidikan",       a:leftD.pendidikan_s1,        b:rightD.pendidikan_s1 },
+      { label:"Bidang Pendidikan", a:leftD.pendidikan_s1, b:rightD.pendidikan_s1 },
       { label:"Status Hukum",    a:leftD.display_status_hukum, b:rightD.display_status_hukum },
       { label:"Kekayaan (Rp)",   a:formatRupiah(leftD.display_kekayaan_rp), b:formatRupiah(rightD.display_kekayaan_rp) },
     ];
@@ -502,43 +557,40 @@ document.addEventListener("change", (e) => {
   }
 
   function enterCompareMode() {
-  compareMode = true;
-  lockedId = null;
+    compareMode = true;
+    lockedId = null;
 
-  dockLeft?.classList.add("dock-left--hidden");
-  layout?.classList.add("umap-layout--onecol");
-  hintLocked && (hintLocked.style.display = "none");
-  hintCompare && (hintCompare.style.display = "inline-flex");
+    dockLeft?.classList.add("dock-left--hidden");
+    layout?.classList.add("umap-layout--onecol");
+    hintLocked && (hintLocked.style.display = "none");
+    hintCompare && (hintCompare.style.display = "inline-flex");
 
-  resetCompare();
+    resetCompare();
 
-  if (btnCompare) {
-    btnCompare.textContent = "Mode Compare Aktif";
-    btnCompare.classList.remove("btn-primary");       // biru default
-    btnCompare.classList.add("btn-compare-active");   // hijau aktif
-  }
-}
-
-
-function exitCompareMode() {
-  compareMode = false;
-  hintCompare && (hintCompare.style.display = "none");
-  dockCompare?.classList.add("dock-compare--hidden");
-
-  if (btnCompare) {
-    btnCompare.textContent = "Bandingkan Menteri";
-    btnCompare.classList.remove("btn-compare-active");
-    btnCompare.classList.add("btn-primary");
+    if (btnCompare) {
+      btnCompare.textContent = "Mode Compare Aktif";
+      btnCompare.classList.remove("btn-primary");
+      btnCompare.classList.add("btn-compare-active");
+    }
   }
 
-  nodes
-    .attr("fill", (n, i) => getColor(n, i))
-    .attr("opacity", 0.9)
-    .attr("r", 5);
-}
+  function exitCompareMode() {
+    compareMode = false;
+    hintCompare && (hintCompare.style.display = "none");
+    dockCompare?.classList.add("dock-compare--hidden");
 
+    if (btnCompare) {
+      btnCompare.textContent = "Bandingkan Menteri";
+      btnCompare.classList.remove("btn-compare-active");
+      btnCompare.classList.add("btn-primary");
+    }
 
-  // ===== dots =====
+    nodes
+      .attr("fill", (n, i) => getColor(n, i))
+      .attr("opacity", 0.9)
+      .attr("r", 5);
+  }
+
   const nodes = g.selectAll("circle")
     .data(data)
     .enter()
@@ -566,7 +618,6 @@ function exitCompareMode() {
       const i = data.indexOf(d);
       const color = getColor(d, i);
 
-      // ===== compare mode click =====
       if (compareMode) {
         if (compareIds.includes(d.id)) {
           compareIds = compareIds.filter((x) => x !== d.id);
@@ -587,7 +638,6 @@ function exitCompareMode() {
         return;
       }
 
-      // ===== normal lock click =====
       lockedId = d.id;
 
       nodes
@@ -598,7 +648,6 @@ function exitCompareMode() {
       renderFullCard(d, color);
     });
 
-  // ===== zoom & pan follow mouse =====
   const zoom = d3.zoom()
     .scaleExtent([0.7, 8])
     .on("zoom", (event) => {
@@ -611,7 +660,6 @@ function exitCompareMode() {
     svg.transition().duration(250).call(zoom.transform, d3.zoomIdentity);
   });
 
-  // ===== compare buttons =====
   btnCompare?.addEventListener("click", () => {
     if (!compareMode) enterCompareMode();
     else exitCompareMode();
@@ -620,10 +668,8 @@ function exitCompareMode() {
   btnExitCompare?.addEventListener("click", exitCompareMode);
   btnResetCompare?.addEventListener("click", resetCompare);
 
-  // ===== close detail external button (kalau ada di blade) =====
   btnCloseDetail?.addEventListener("click", closeDetailDock);
 
-  // ✅ AUTO LOCK EKSEKUSI SETELAH NODES READY
   if (autoLockTarget) {
     const i = data.indexOf(autoLockTarget);
     const color = getColor(autoLockTarget, i);
@@ -636,7 +682,6 @@ function exitCompareMode() {
 
     renderFullCard(autoLockTarget, color);
 
-    // optional: auto zoom ke titik baru biar langsung kelihatan
     const tx = x(+autoLockTarget.umap_x);
     const ty = y(+autoLockTarget.umap_y);
     svg.transition()
